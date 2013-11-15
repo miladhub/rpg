@@ -1,0 +1,8 @@
+County of the Wizard
+	Tower Acres
+	Witch jungle
+	Wizard border
+Realm of the Warrior
+	Warrior border
+	Barracks
+	Fighting pit
