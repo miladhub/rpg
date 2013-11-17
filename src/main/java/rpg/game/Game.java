@@ -20,23 +20,22 @@ public class Game implements CommandContext, MovementsListener {
 		return worldName;
 	}
 
+	@Override
 	public InputPort enterAs(String character, OutputPort out) {
 		outs.put(character, out);
 		out.heardFromGame("Welcome to " + worldName + ", " + character + "!");
 		return new Session(this, character);
 	}
-
-	public void said(String speaker, String what) {
-		new Speak(speaker, what).execute(this);
+	
+	@Override
+	public void quit(String character) {
+		outputPort(character).heardFromGame("Bye.");
+		outs.remove(character);
 	}
 	
-	public void moved(String movingChar, String where) {
-		new Move(movingChar, where).execute(this);
-	}
-
 	@Override
-	public OutputPort outputPort(String otherCharacter) {
-		return outs.get(otherCharacter);
+	public OutputPort outputPort(String character) {
+		return outs.get(character);
 	}
 
 	@Override
@@ -60,20 +59,13 @@ public class Game implements CommandContext, MovementsListener {
 		return charLocations;
 	}
 
-	public void tellWhereaboutOf(String character) {
-		Location location = charLocations.whereIs(character);
-		outputPort(character).heardFromGame("You're in " + location.place() + ", " + location.region() + ".");
-	}
-
-	public void tellWhatsNear(String character) {
-		outputPort(character).heardFromGame("You can go to:");
-		for (Location near : charLocations.locationsAdjacentTo(character)) {
-			outputPort(character).heardFromGame("\t" + near.place());
-		}
-	}
-
 	@Override
 	public void regionChangedTo(String character, String region) {
 		outputPort(character).heardFromGame("You have crossed into " + region + ".");
+	}
+
+	@Override
+	public void positionChangedTo(String character, LocalPosition localPosition) {
+		outputPort(character).heardFromGame("Local position is now " + localPosition + ".");
 	}
 }

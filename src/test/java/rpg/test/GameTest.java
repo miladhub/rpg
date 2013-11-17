@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 
 import org.junit.Test;
 
+import rpg.game.Direction;
 import rpg.game.Game;
 import rpg.game.InputPort;
 import rpg.game.OutputPort;
@@ -29,9 +30,7 @@ public class GameTest {
 	private final OutputPort johnOut = mock(OutputPort.class);
 
 	private InputPort joinJim() {
-		InputPort jim = game.enterAs("jim", jimOut);
-		verify(jimOut).heardFromGame("Welcome to Testlandia, jim!");
-		return jim;
+		return game.enterAs("jim", jimOut);
 	}
 	
 	@Test
@@ -67,10 +66,7 @@ public class GameTest {
 	@Test
 	public void jimSeesJohnApproaching() {
 		game.enterAs("jim", jimOut);
-		verify(jimOut).heardFromGame("Welcome to Testlandia, jim!");
-		
 		InputPort john = game.enterAs("john", johnOut);
-		verify(johnOut).heardFromGame("Welcome to Testlandia, john!");
 		
 		charLocations.setCharacterAtLocation("jim", "County of the Mage", "an open field");
 		charLocations.setCharacterAtLocation("john", "County of the Mage", "a field next to the previous one");
@@ -83,7 +79,6 @@ public class GameTest {
 	@Test
 	public void jimDiscoversAdjacentField() {
 		InputPort jim = joinJim();
-		
 		charLocations.setCharacterAtLocation("jim", "County of the Mage", "an open field");
 
 		jim.whatsNear();
@@ -95,7 +90,6 @@ public class GameTest {
 	@Test
 	public void jimCrossesTheBorder() {
 		InputPort jim = joinJim();
-		
 		charLocations.setCharacterAtLocation("jim", "County of the Mage", "the Mage border");
 		
 		jim.moveTo("the Warrior border");
@@ -106,11 +100,28 @@ public class GameTest {
 	@Test
 	public void jimStaysWithinTheRegion() {
 		InputPort jim = joinJim();
-		
 		charLocations.setCharacterAtLocation("jim", "County of the Mage", "an open field");
 		
 		jim.moveTo("a field next to the previous one");
 		
 		verify(jimOut, never()).heardFromGame("You have crossed into County of the Mage.");
 	}
+	
+	@Test
+	public void moveForward() {
+		InputPort jim = joinJim();
+		verify(jimOut).heardFromGame("Welcome to Testlandia, jim!");
+		
+		charLocations.setCharacterAtLocation("jim", "County of the Mage", "an open field");
+		charLocations.setLocalPosition("jim", 0, 0);
+		
+		jim.move(Direction.Forward);
+		verify(jimOut).heardFromGame("Local position is now x = 0, y = 1.");
+
+		jim.position();
+		verify(jimOut).heardFromGame("You're at position x = 0, y = 1.");
+	}
+	
+	//TODO: visualize grid
+	//TODO: read from file
 }

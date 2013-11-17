@@ -8,24 +8,39 @@ public class Session implements InputPort {
 		this.game = game;
 		this.character = character;
 	}
+	
+	@Override
+	public String character() {
+		return character;
+	}
 
 	@Override
 	public void say(String what) {
-		game.said(character, what);
+		new Say(character, what).execute(game);
 	}
 
 	@Override
 	public void whereabout() {
-		game.tellWhereaboutOf(character);
+		new TellWhereabout(character).execute(game);
 	}
 
 	@Override
 	public void moveTo(String where) {
-		game.moved(character, where);
+		new Travel(character, where).execute(game);
 	}
 
 	@Override
 	public void whatsNear() {
-		game.tellWhatsNear(character);
+		new TellWhatsNear(character).execute(game);
+	}
+
+	@Override
+	public void move(Direction dir) {
+		new Move(character, dir).execute(game);
+	}
+
+	@Override
+	public void position() {
+		new TellPosition(character).execute(game);
 	}
 }

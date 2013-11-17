@@ -1,38 +1,36 @@
 package rpg.tcp;
 
-import java.net.Socket;
-
-import rpg.game.Game;
+import rpg.game.Command;
+import rpg.game.Say;
+import rpg.game.TellWhatsNear;
+import rpg.game.TellWhereabout;
+import rpg.game.Travel;
 
 public class Commands {
-	private final Game game;
-	private final Socket clientSocket;
 	private final ClientContext context;
 
-	public Commands(Game game, Socket clientSocket, ClientContext context) {
-		this.game = game;
-		this.clientSocket = clientSocket;
+	public Commands(ClientContext context) {
 		this.context = context;
 	}
 
 	public Command createCommand(String command) throws UnknownCommandException {
-		if ("quit".equals(command)) {
-			return new Quit(clientSocket);
-		}
 		if (command.startsWith("enter as ")) {
-			return new StartGame(context, command, game);
+			return new StartGame(context, command);
+		}
+		if ("quit".equals(command)) {
+			return new Quit(context);
 		}
 		if (command.startsWith("say ")) {
-			return new Say(context, command);
+			return new Say(context.inputPort().character(), command.substring("say ".length()));
 		}
 		if (command.startsWith("go to ")) {
-			return new GoTo(context, command);
+			return new Travel(context.inputPort().character(), command.substring("go to ".length()));
 		}
 		if ("where am I".equalsIgnoreCase(command)) {
-			return new WhereAmI(context);
+			return new TellWhereabout(context.inputPort().character());
 		}
 		if ("what's near".equalsIgnoreCase(command)) {
-			return new WhatsNear(context);
+			return new TellWhatsNear(context.inputPort().character());
 		}
 		throw new UnknownCommandException(command);
 	}

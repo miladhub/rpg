@@ -15,4 +15,10 @@ public class MovementsListeners {
 			l.regionChangedTo(character, region);
 		}
 	}
+
+	public void notifyPositionChanged(String character, LocalPosition localPosition) {
+		for (MovementsListener l : listeners) {
+			l.positionChangedTo(character, localPosition);
+		}
+	}
 }

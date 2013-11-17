@@ -1,7 +1,7 @@
 package rpg.tcp;
 
-import java.io.IOException;
-import java.io.PrintWriter;
+import rpg.game.Command;
+import rpg.game.CommandContext;
 
 public class WhereAmI implements Command {
 	private final ClientContext context;
@@ -11,7 +11,7 @@ public class WhereAmI implements Command {
 	}
 
 	@Override
-	public void execute(PrintWriter writer) throws IOException {
-		context.session().whereabout();
+	public void execute(CommandContext commandContext) {
+		context.inputPort().whereabout();
 	}
 }
