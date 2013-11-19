@@ -3,7 +3,7 @@ package rpg.game;
 import java.util.Set;
 
 public interface CommandContext {
-	InputPort enterAs(String character, OutputPort out);
+	void enterAs(String character, OutputPort out);
 	void quit(String character);
 	OutputPort outputPort(String character);
 	CharacterLocations characterLocations();

@@ -9,18 +9,16 @@ import java.net.Socket;
 import java.util.concurrent.Callable;
 
 import rpg.game.Game;
-import rpg.game.InputPort;
 import rpg.game.OutputPort;
 
-public class ClientHandler implements Callable<String>, ClientContext {
+public class ClientHandler implements Callable<String> {
 	private final Socket clientSocket;
 	private final Game game;
 	private final BufferedReader reader;
 	private final PrintWriter writer;
 	private final OutputPort out;
-	private InputPort session;
 
-	public ClientHandler(Game game, Socket clientSocket) throws IOException {
+	public ClientHandler(Game game, final Socket clientSocket) throws IOException {
 		super();
 		this.game = game;
 		this.clientSocket = clientSocket;
@@ -39,13 +37,21 @@ public class ClientHandler implements Callable<String>, ClientContext {
 			public void sees(String whoOrWhat) {
 				writer.println("You see: " + whoOrWhat);
 			}
+			@Override
+			public void disconnect() {
+				try {
+					clientSocket.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		};
 	}
 
 	@Override
 	public String call() throws Exception {
 		try {
-			final Commands commands = new Commands(this); 
+			final Commands commands = new Commands(out);
 			String command;
 			while ((command = reader.readLine()) != null) {
 				try {
@@ -57,30 +63,6 @@ public class ClientHandler implements Callable<String>, ClientContext {
 			return "done";
 		} finally {
 			clientSocket.close();
-		}
-	}
-	
-	@Override
-	public InputPort inputPort() {
-		return session;
-	}
-
-	@Override
-	public void startSession(InputPort session) {
-		this.session = session; 
-	}
-
-	@Override
-	public OutputPort outputPort() {
-		return out;
-	}
-	
-	@Override
-	public void endSession() {
-		try {
-			clientSocket.close();
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 }

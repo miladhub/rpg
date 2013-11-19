@@ -21,15 +21,15 @@ public class Game implements CommandContext, MovementsListener {
 	}
 
 	@Override
-	public InputPort enterAs(String character, OutputPort out) {
+	public void enterAs(String character, OutputPort out) {
 		outs.put(character, out);
 		out.heardFromGame("Welcome to " + worldName + ", " + character + "!");
-		return new Session(this, character);
 	}
 	
 	@Override
 	public void quit(String character) {
 		outputPort(character).heardFromGame("Bye.");
+		outputPort(character).disconnect();
 		outs.remove(character);
 	}
 	

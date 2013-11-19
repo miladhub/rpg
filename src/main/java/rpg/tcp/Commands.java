@@ -1,36 +1,41 @@
 package rpg.tcp;
 
 import rpg.game.Command;
+import rpg.game.OutputPort;
+import rpg.game.QuitGame;
 import rpg.game.Say;
+import rpg.game.StartGame;
 import rpg.game.TellWhatsNear;
 import rpg.game.TellWhereabout;
 import rpg.game.Travel;
 
 public class Commands {
-	private final ClientContext context;
+	private final OutputPort out;
+	private String character;
 
-	public Commands(ClientContext context) {
-		this.context = context;
+	public Commands(OutputPort out) {
+		this.out = out;
 	}
 
 	public Command createCommand(String command) throws UnknownCommandException {
 		if (command.startsWith("enter as ")) {
-			return new StartGame(context, command);
+			character = command.substring("enter as ".length());
+			return new StartGame(character, out);
 		}
 		if ("quit".equals(command)) {
-			return new Quit(context);
+			return new QuitGame(character);
 		}
 		if (command.startsWith("say ")) {
-			return new Say(context.inputPort().character(), command.substring("say ".length()));
+			return new Say(character, command.substring("say ".length()));
 		}
 		if (command.startsWith("go to ")) {
-			return new Travel(context.inputPort().character(), command.substring("go to ".length()));
+			return new Travel(character, command.substring("go to ".length()));
 		}
 		if ("where am I".equalsIgnoreCase(command)) {
-			return new TellWhereabout(context.inputPort().character());
+			return new TellWhereabout(character);
 		}
 		if ("what's near".equalsIgnoreCase(command)) {
-			return new TellWhatsNear(context.inputPort().character());
+			return new TellWhatsNear(character);
 		}
 		throw new UnknownCommandException(command);
 	}
