@@ -16,6 +16,8 @@ public class Main {
 		CharacterLocations locations = new CharacterLocations(map);
 		locations.setCharacterAtLocation("Jim", "County of the Wizard", "Witch jungle");
 		locations.setCharacterAtLocation("John", "Realm of the Warrior", "Barracks");
+		locations.setLocalPosition("Jim", 0, 0);
+		locations.setLocalPosition("John", 0, 0);
 		final TcpGameServer gameServer = new TcpGameServer("The game", new ConsolePort(), locations);
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			public void run() {

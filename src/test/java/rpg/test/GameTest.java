@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import rpg.game.Direction;
 import rpg.game.Game;
+import rpg.game.LocalPosition;
 import rpg.game.Move;
 import rpg.game.Say;
 import rpg.game.OutputPort;
@@ -113,6 +114,19 @@ public class GameTest {
 	}
 	
 	@Test
+	public void tellPosition() {
+		joinJim();
+		verify(jimOut).heardFromGame("Welcome to Testlandia, jim!");
+		
+		charLocations.setCharacterAtLocation("jim", "County of the Mage", "an open field");
+		charLocations.setLocalPosition("jim", 0, 0);
+		
+		new TellPosition("jim").execute(game);
+
+		verify(jimOut).movedTo(new LocalPosition(0, 0));
+	}
+	
+	@Test
 	public void moveForward() {
 		joinJim();
 		verify(jimOut).heardFromGame("Welcome to Testlandia, jim!");
@@ -121,10 +135,9 @@ public class GameTest {
 		charLocations.setLocalPosition("jim", 0, 0);
 		
 		new Move("jim", Direction.Forward).execute(game);
-		verify(jimOut).heardFromGame("Local position is now x = 0, y = 1.");
-
 		new TellPosition("jim").execute(game);
-		verify(jimOut).heardFromGame("You're at position x = 0, y = 1.");
+
+		verify(jimOut, times(2)).movedTo(new LocalPosition(0, 1));
 	}
 	
 	//TODO: visualize grid

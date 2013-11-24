@@ -4,5 +4,6 @@ public interface OutputPort {
 	void heardFromGame(String message);
 	void heardFrom(String from, String what);
 	void sees(String whoOrWhat);
-	void disconnect();
+	void movedTo(LocalPosition localPosition);
+	void endSession();
 }

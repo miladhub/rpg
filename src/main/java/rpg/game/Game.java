@@ -29,7 +29,7 @@ public class Game implements CommandContext, MovementsListener {
 	@Override
 	public void quit(String character) {
 		outputPort(character).heardFromGame("Bye.");
-		outputPort(character).disconnect();
+		outputPort(character).endSession();
 		outs.remove(character);
 	}
 	
@@ -66,6 +66,6 @@ public class Game implements CommandContext, MovementsListener {
 
 	@Override
 	public void positionChangedTo(String character, LocalPosition localPosition) {
-		outputPort(character).heardFromGame("Local position is now " + localPosition + ".");
+		outputPort(character).movedTo(localPosition);
 	}
 }
