@@ -3,7 +3,6 @@ package rpg.test;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -20,27 +19,34 @@ import rpg.tcp.ServerOutputPort;
 import rpg.tcp.TcpGameServer;
 
 public class TcpGamePortTest {
+	private static final CharacterLocations LOCATIONS = new CharacterLocations(WorldMap.createEmptyMap());
 	private ClientStub clientOne = new ClientStub();
 	private ClientStub clientTwo = new ClientStub();
 	private ExecutorService executor = Executors.newSingleThreadExecutor();
 	private CyclicBarrier synchPoint = new CyclicBarrier(2);
 	private TcpGameServer server = new TcpGameServer("Testland", new ServerOutputPort() {
 		@Override
-		public void listening(int port) throws Exception {
-			synchPoint.await();
+		public void listening(int port) {
+			try {
+				synchPoint.await();
+			} catch (InterruptedException | BrokenBarrierException e) {
+			}
 		}
 		@Override
 		public void clientConnected(InetAddress inetAddress) {
 		}
-	}, new CharacterLocations(WorldMap.createEmptyMap()));
+		@Override
+		public void cannotListen(String cause) {
+			synchPoint.reset();
+		}
+	}, LOCATIONS);
 
 	@Before
 	public void connectToGame() throws IOException, InterruptedException, ExecutionException, BrokenBarrierException {
-		executor.submit(new Callable<String>() {
+		executor.submit(new Runnable() {
 			@Override
-			public String call() throws Exception {
+			public void run() {
 				server.listen(6789);
-				return "server done";
 			}
 		});
 		synchPoint.await();

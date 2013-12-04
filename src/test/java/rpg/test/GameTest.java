@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import rpg.game.Direction;
 import rpg.game.Game;
+import rpg.game.LocalMap;
 import rpg.game.LocalPosition;
 import rpg.game.Move;
 import rpg.game.Say;
@@ -123,7 +124,7 @@ public class GameTest {
 		
 		new TellPosition("jim").execute(game);
 
-		verify(jimOut).movedTo(new LocalPosition(0, 0));
+		verify(jimOut).movedTo(new LocalPosition(0, 0), new LocalMap(5, 5));
 	}
 	
 	@Test
@@ -137,9 +138,8 @@ public class GameTest {
 		new Move("jim", Direction.Forward).execute(game);
 		new TellPosition("jim").execute(game);
 
-		verify(jimOut, times(2)).movedTo(new LocalPosition(0, 1));
+		verify(jimOut, times(2)).movedTo(new LocalPosition(0, 1), new LocalMap(5, 5));
 	}
 	
-	//TODO: visualize grid
-	//TODO: read from file
+	//TODO: read local map from file
 }

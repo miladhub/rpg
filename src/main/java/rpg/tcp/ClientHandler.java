@@ -9,6 +9,7 @@ import java.net.Socket;
 import java.util.concurrent.Callable;
 
 import rpg.game.Game;
+import rpg.game.LocalMap;
 import rpg.game.LocalPosition;
 import rpg.game.OutputPort;
 
@@ -39,8 +40,8 @@ public class ClientHandler implements Callable<String> {
 				writer.println("You see: " + whoOrWhat);
 			}
 			@Override
-			public void movedTo(LocalPosition localPosition) {
-				writer.println("Local position is now " + localPosition + ".");
+			public void movedTo(LocalPosition localPosition, LocalMap localMap) {
+				writer.println(new GridPrinter(localPosition, localMap).print());
 			}
 			@Override
 			public void endSession() {

@@ -103,4 +103,8 @@ public class WorldMap {
 			return top;
 		}
 	}
+
+	public LocalMap localMap(Location location) {
+		return new LocalMap(5, 5);
+	}
 }

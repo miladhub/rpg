@@ -22,13 +22,17 @@ public class TcpGameServer {
 		game = new Game(worldName, characterLocations);
 	}
 
-	public void listen(int port) throws Exception {
-		welcomeSocket = new ServerSocket(port);
-		out.listening(port);
-		while (!shutdown) {
-			Socket socket = welcomeSocket.accept();
-			pool.submit(new ClientHandler(game, socket));
-			out.clientConnected(socket.getInetAddress());
+	public void listen(int port) {
+		try {
+			welcomeSocket = new ServerSocket(port);
+			out.listening(port);
+			while (!shutdown) {
+				Socket socket = welcomeSocket.accept();
+				pool.submit(new ClientHandler(game, socket));
+				out.clientConnected(socket.getInetAddress());
+			}
+		} catch (IOException e) {
+			out.cannotListen(e.getMessage());
 		}
 	}
 

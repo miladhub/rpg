@@ -66,4 +66,8 @@ public class CharacterLocations {
 		}
 		listeners.notifyPositionChanged(character, localPosition(character));
 	}
+
+	public LocalMap localMap(String character) {
+		return map.localMap(whereIs(character));
+	}
 }

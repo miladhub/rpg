@@ -10,6 +10,6 @@ public class TellPosition implements Command {
 	@Override
 	public void execute(CommandContext commandContext) {
 		LocalPosition pos = commandContext.characterLocations().localPosition(character);
-		commandContext.outputPort(character).movedTo(pos);
+		commandContext.outputPort(character).movedTo(pos, commandContext.characterLocations().localMap(character));
 	}
 }

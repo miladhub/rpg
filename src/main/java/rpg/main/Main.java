@@ -18,7 +18,7 @@ public class Main {
 		locations.setCharacterAtLocation("John", "Realm of the Warrior", "Barracks");
 		locations.setLocalPosition("Jim", 0, 0);
 		locations.setLocalPosition("John", 0, 0);
-		final TcpGameServer gameServer = new TcpGameServer("The game", new ConsolePort(), locations);
+		final TcpGameServer gameServer = new TcpGameServer("The game", new ClientConsole(), locations);
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			public void run() {
 				try {

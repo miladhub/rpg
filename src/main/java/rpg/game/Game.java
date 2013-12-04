@@ -66,6 +66,6 @@ public class Game implements CommandContext, MovementsListener {
 
 	@Override
 	public void positionChangedTo(String character, LocalPosition localPosition) {
-		outputPort(character).movedTo(localPosition);
+		outputPort(character).movedTo(localPosition, charLocations.localMap(character));
 	}
 }
