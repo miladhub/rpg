@@ -22,7 +22,7 @@ import rpg.game.CharacterLocations;
 public class GameTest {
 	private final WorldMap map = new WorldMap.WorldMapBuilder()
 			.addRegion("County of the Mage")
-			.addPlace("an open field")
+			.addPlace("an open field").size("5x5")
 			.addPlace("a field next to the previous one")
 			.addPlace("the Mage border")
 			.addRegion("the County of the Warrior")

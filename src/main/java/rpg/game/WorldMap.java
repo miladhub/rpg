@@ -1,6 +1,7 @@
 package rpg.game;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.Set;
 public class WorldMap {
 	private final Set<Arch> archs = new HashSet<>();
 	private final Set<Location> locs = new HashSet<>();
+	private Map<Location, LocalMap> localMaps = new HashMap<>();
 	
 	private WorldMap() {
 		super();
@@ -75,6 +77,8 @@ public class WorldMap {
 	public static class WorldMapBuilder {
 		private Map<String,List<String>> places = new LinkedHashMap<>();
 		private String currRegion;
+		private String currPlace;
+		private Map<String, String> sizes = new HashMap<>();
 
 		public WorldMapBuilder addRegion(String region) {
 			currRegion = region;
@@ -83,10 +87,16 @@ public class WorldMap {
 		}
 
 		public WorldMapBuilder addPlace(String place) {
+			currPlace = place;
 			places.get(currRegion).add(place);
 			return this;
 		}
 
+		public WorldMapBuilder size(String size) {
+			sizes.put(currPlace, size);
+			return this;
+		}
+		
 		public WorldMap createMap() {
 			WorldMap top = WorldMap.createEmptyMap();
 			Location prevLoc = null;
@@ -98,13 +108,20 @@ public class WorldMap {
 						top.connect(prevLoc, loc);
 					}
 					prevLoc = loc;
+					if (sizes.containsKey(place)) {
+						top.localMaps.put(loc, parseLocalMap(sizes.get(place)));
+					}
 				}
 			}
 			return top;
 		}
+
+		private LocalMap parseLocalMap(String size) {
+			return new LocalMap(Integer.parseInt(size.split("x")[0]), Integer.parseInt(size.split("x")[1]));
+		}
 	}
 
 	public LocalMap localMap(Location location) {
-		return new LocalMap(5, 5);
+		return localMaps.get(location);
 	}
 }

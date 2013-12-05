@@ -7,6 +7,7 @@ import java.util.HashSet;
 
 import org.junit.Test;
 
+import rpg.game.LocalMap;
 import rpg.game.Location;
 import rpg.game.WorldMap;
 
@@ -29,6 +30,18 @@ public class WorldMapBuilderTest {
 		assertEquals(new HashSet<>(Arrays.asList("region")), top.regions());
 		assertEquals(new HashSet<>(Arrays.asList(new Location("region", "place 1"),
 				new Location("region", "place 2"))), top.locations());
+	}
+	
+	@Test
+	public void buildOneRegionWithSize() {
+		WorldMap.WorldMapBuilder b = new WorldMap.WorldMapBuilder();
+		b.addRegion("region");
+		b.addPlace("place 1").size("3x4");
+		
+		WorldMap top = b.createMap();
+		assertEquals(new HashSet<>(Arrays.asList("region")), top.regions());
+		assertEquals(new HashSet<>(Arrays.asList(new Location("region", "place 1"))), top.locations());
+		assertEquals(new LocalMap(3, 4), top.localMap(new Location("region", "place 1")));
 	}
 	
 	@Test
