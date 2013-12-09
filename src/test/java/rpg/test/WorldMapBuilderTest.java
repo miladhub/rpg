@@ -45,6 +45,18 @@ public class WorldMapBuilderTest {
 	}
 	
 	@Test
+	public void defaultSizeIs5x5() {
+		WorldMap.WorldMapBuilder b = new WorldMap.WorldMapBuilder();
+		b.addRegion("region");
+		b.addPlace("place 1");
+		
+		WorldMap top = b.createMap();
+		assertEquals(new HashSet<>(Arrays.asList("region")), top.regions());
+		assertEquals(new HashSet<>(Arrays.asList(new Location("region", "place 1"))), top.locations());
+		assertEquals(new LocalMap(5, 5), top.localMap(new Location("region", "place 1")));
+	}
+	
+	@Test
 	public void buildTwoRegions() {
 		WorldMap.WorldMapBuilder b = new WorldMap.WorldMapBuilder();
 		b.addRegion("region 1");

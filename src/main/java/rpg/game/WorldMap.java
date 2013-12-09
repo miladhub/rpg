@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class WorldMap {
+	private static final LocalMap DEFAULT_LOCATION_SIZE = new LocalMap(5, 5);
 	private final Set<Arch> archs = new HashSet<>();
 	private final Set<Location> locs = new HashSet<>();
 	private Map<Location, LocalMap> localMaps = new HashMap<>();
@@ -122,6 +123,10 @@ public class WorldMap {
 	}
 
 	public LocalMap localMap(Location location) {
-		return localMaps.get(location);
+		if (localMaps.containsKey(location)) {
+			return localMaps.get(location);
+		} else {
+			return DEFAULT_LOCATION_SIZE;
+		}
 	}
 }

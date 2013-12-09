@@ -140,6 +140,4 @@ public class GameTest {
 
 		verify(jimOut, times(2)).movedTo(new LocalPosition(0, 1), new LocalMap(5, 5));
 	}
-	
-	//TODO: read local map from file
 }
