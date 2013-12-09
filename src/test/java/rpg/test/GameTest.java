@@ -9,6 +9,7 @@ import rpg.game.Direction;
 import rpg.game.Game;
 import rpg.game.LocalMap;
 import rpg.game.LocalPosition;
+import rpg.game.LookAround;
 import rpg.game.Move;
 import rpg.game.Say;
 import rpg.game.OutputPort;
@@ -54,8 +55,10 @@ public class GameTest {
 	@Test
 	public void jimSpeaksToJohn() {
 		game.enterAs("jim", jimOut);
-		
 		game.enterAs("john", johnOut);
+		
+		charLocations.setCharacterAtLocation("jim", "County of the Mage", "an open field");
+		charLocations.setCharacterAtLocation("john", "County of the Mage", "an open field");
 		
 		new Say("jim", "hi").execute(game);
 		verify(johnOut).heardFrom("jim", "hi");
@@ -77,10 +80,12 @@ public class GameTest {
 		
 		charLocations.setCharacterAtLocation("jim", "County of the Mage", "an open field");
 		charLocations.setCharacterAtLocation("john", "County of the Mage", "a field next to the previous one");
-
+		charLocations.setLocalPosition("jim", 0, 0);
+		charLocations.setLocalPosition("john", 0, 0);
+		
 		new Travel("john", "an open field").execute(game);
-		verify(jimOut).sees("john");
-		verify(johnOut).sees("jim");
+		verify(jimOut).sees("john", new LocalPosition(0, 0));
+		verify(johnOut).sees("jim", new LocalPosition(0, 0));
 	}
 	
 	@Test
@@ -124,7 +129,7 @@ public class GameTest {
 		
 		new TellPosition("jim").execute(game);
 
-		verify(jimOut).movedTo(new LocalPosition(0, 0), new LocalMap(5, 5));
+		verify(jimOut).isAt(new LocalPosition(0, 0), new LocalMap(5, 5));
 	}
 	
 	@Test
@@ -138,6 +143,24 @@ public class GameTest {
 		new Move("jim", Direction.Forward).execute(game);
 		new TellPosition("jim").execute(game);
 
-		verify(jimOut, times(2)).movedTo(new LocalPosition(0, 1), new LocalMap(5, 5));
+		verify(jimOut, times(2)).isAt(new LocalPosition(0, 1), new LocalMap(5, 5));
+	}
+	
+	@Test
+	public void jimAndJohnSeeEachOtherInTheLocalMap() {
+		game.enterAs("jim", jimOut);
+		game.enterAs("john", johnOut);
+		
+		charLocations.setCharacterAtLocation("jim", "County of the Mage", "an open field");
+		charLocations.setLocalPosition("jim", 0, 0);
+		
+		charLocations.setCharacterAtLocation("john", "County of the Mage", "an open field");
+		charLocations.setLocalPosition("john", 2, 2);
+		
+		new LookAround("jim").execute(game);
+		verify(jimOut).sees("john", new LocalPosition(2, 2));
+		
+		new LookAround("john").execute(game);
+		verify(johnOut).sees("jim", new LocalPosition(0, 0));
 	}
 }

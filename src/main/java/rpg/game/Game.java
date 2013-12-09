@@ -37,21 +37,24 @@ public class Game implements CommandContext, MovementsListener {
 	public OutputPort outputPort(String character) {
 		return outs.get(character);
 	}
-
-	@Override
-	public Set<String> characters() {
-		return outs.keySet();
-	}
 	
 	@Override
-	public Set<String> charactersOthersThan(String character) {
+	public Set<String> nearbyCharacters(String character) {
 		Set<String> others = new HashSet<>();
 		for (String other : characters()) {
 			if (!character.equals(other)) {
-				others.add(other);
+				Location movingCharLocation = charLocations.whereIs(character);
+				Location otherCharLocation = charLocations.whereIs(other);
+				if (movingCharLocation.place().equals(otherCharLocation.place())) {
+					others.add(other);
+				}
 			}
 		}
 		return others;
+	}
+	
+	private Set<String> characters() {
+		return outs.keySet();
 	}
 	
 	@Override
@@ -66,6 +69,6 @@ public class Game implements CommandContext, MovementsListener {
 
 	@Override
 	public void positionChangedTo(String character, LocalPosition localPosition) {
-		outputPort(character).movedTo(localPosition, charLocations.localMap(character));
+		outputPort(character).isAt(localPosition, charLocations.localMap(character));
 	}
 }

@@ -11,7 +11,7 @@ public class Say implements Command {
 	
 	@Override
 	public void execute(CommandContext context) {
-		for (String otherCharacter : context.charactersOthersThan(speaker)) {
+		for (String otherCharacter : context.nearbyCharacters(speaker)) {
 			context.outputPort(otherCharacter).heardFrom(speaker, what);
 		}
 	}

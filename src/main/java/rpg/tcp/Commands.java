@@ -2,6 +2,7 @@ package rpg.tcp;
 
 import rpg.game.Command;
 import rpg.game.Direction;
+import rpg.game.LookAround;
 import rpg.game.Move;
 import rpg.game.OutputPort;
 import rpg.game.QuitGame;
@@ -34,10 +35,10 @@ public class Commands {
 		if (command.startsWith("go to ")) {
 			return new Travel(character, command.substring("go to ".length()));
 		}
-		if ("where am I".equalsIgnoreCase(command)) {
+		if (command.contains("where")) {
 			return new TellWhereabout(character);
 		}
-		if ("what's near".equalsIgnoreCase(command)) {
+		if (command.contains("near")) {
 			return new TellWhatsNear(character);
 		}
 		if (command.contains("move")) {
@@ -45,6 +46,9 @@ public class Commands {
 		}
 		if (command.contains("position")) {
 			return new TellPosition(character);
+		}
+		if (command.contains("look")) {
+			return new LookAround(character);
 		}
 		throw new UnknownCommandException(command);
 	}

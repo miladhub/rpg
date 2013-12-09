@@ -36,11 +36,11 @@ public class ClientHandler implements Callable<String> {
 				writer.println(from + ": " + what);
 			}
 			@Override
-			public void sees(String whoOrWhat) {
-				writer.println("You see: " + whoOrWhat);
+			public void sees(String whoOrWhat, LocalPosition where) {
+				writer.println("You see: " + whoOrWhat + " at " + where);
 			}
 			@Override
-			public void movedTo(LocalPosition localPosition, LocalMap localMap) {
+			public void isAt(LocalPosition localPosition, LocalMap localMap) {
 				writer.println(new GridPrinter(localPosition, localMap).print());
 			}
 			@Override

@@ -19,12 +19,20 @@ import rpg.tcp.ServerOutputPort;
 import rpg.tcp.TcpGameServer;
 
 public class TcpGamePortTest {
-	private static final CharacterLocations LOCATIONS = new CharacterLocations(WorldMap.createEmptyMap());
-	private ClientStub clientOne = new ClientStub();
-	private ClientStub clientTwo = new ClientStub();
-	private ExecutorService executor = Executors.newSingleThreadExecutor();
-	private CyclicBarrier synchPoint = new CyclicBarrier(2);
-	private TcpGameServer server = new TcpGameServer("Testland", new ServerOutputPort() {
+	private final WorldMap map = new WorldMap.WorldMapBuilder()
+		.addRegion("County of the Mage")
+		.addPlace("an open field").size("5x5")
+		.addPlace("a field next to the previous one")
+		.addPlace("the Mage border")
+		.addRegion("the County of the Warrior")
+		.addPlace("the Warrior border")
+		.createMap();
+	private final CharacterLocations charLocations = new CharacterLocations(map);
+	private final ClientStub clientOne = new ClientStub();
+	private final ClientStub clientTwo = new ClientStub();
+	private final ExecutorService executor = Executors.newSingleThreadExecutor();
+	private final CyclicBarrier synchPoint = new CyclicBarrier(2);
+	private final TcpGameServer server = new TcpGameServer("Testland", new ServerOutputPort() {
 		@Override
 		public void listening(int port) {
 			try {
@@ -39,7 +47,7 @@ public class TcpGamePortTest {
 		public void cannotListen(String cause) {
 			synchPoint.reset();
 		}
-	}, LOCATIONS);
+	}, charLocations);
 
 	@Before
 	public void connectToGame() throws IOException, InterruptedException, ExecutionException, BrokenBarrierException {
@@ -50,6 +58,8 @@ public class TcpGamePortTest {
 			}
 		});
 		synchPoint.await();
+		charLocations.setCharacterAtLocation("jim", "County of the Mage", "an open field");
+		charLocations.setCharacterAtLocation("john", "County of the Mage", "an open field");
 	}
 
 	@Test

@@ -7,6 +7,5 @@ public interface CommandContext {
 	void quit(String character);
 	OutputPort outputPort(String character);
 	CharacterLocations characterLocations();
-	Set<String> characters();
-	Set<String> charactersOthersThan(String character);
+	Set<String> nearbyCharacters(String character);
 }
