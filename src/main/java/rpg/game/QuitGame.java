@@ -9,6 +9,9 @@ public class QuitGame implements Command {
 
 	@Override
 	public void execute(CommandContext commandContext) {
-		commandContext.quit(character);
+		OutputPort port = commandContext.outputPort(character);
+		port.heardFromGame("Bye.");
+		port.endSession();
+		commandContext.removeCharacter(character);
 	}
 }

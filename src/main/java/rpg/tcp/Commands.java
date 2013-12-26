@@ -7,7 +7,7 @@ import rpg.game.Move;
 import rpg.game.OutputPort;
 import rpg.game.QuitGame;
 import rpg.game.Say;
-import rpg.game.StartGame;
+import rpg.game.EnterGame;
 import rpg.game.TellPosition;
 import rpg.game.TellWhatsNear;
 import rpg.game.TellWhereabout;
@@ -24,7 +24,7 @@ public class Commands {
 	public Command createCommand(String command) throws UnknownCommandException {
 		if (command.startsWith("enter as ")) {
 			character = command.substring("enter as ".length());
-			return new StartGame(character, out);
+			return new EnterGame(character, out);
 		}
 		if ("quit".equals(command)) {
 			return new QuitGame(character);

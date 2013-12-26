@@ -16,25 +16,26 @@ public class Game implements CommandContext, MovementsListener {
 		charLocations.registerToMovements(this);
 	}
 
+	@Override
 	public String worldName() {
 		return worldName;
 	}
 
 	@Override
-	public void enterAs(String character, OutputPort out) {
+	public void addCharacter(String character, OutputPort out) {
 		outs.put(character, out);
-		out.heardFromGame("Welcome to " + worldName + ", " + character + "!");
 	}
 	
 	@Override
-	public void quit(String character) {
-		outputPort(character).heardFromGame("Bye.");
-		outputPort(character).endSession();
+	public void removeCharacter(String character) {
 		outs.remove(character);
 	}
 	
 	@Override
 	public OutputPort outputPort(String character) {
+		if (!outs.containsKey(character)) {
+			throw new IllegalStateException("No output port defined for character " + character);
+		}
 		return outs.get(character);
 	}
 	

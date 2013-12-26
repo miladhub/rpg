@@ -38,7 +38,7 @@ public class GameTest {
 	private final OutputPort johnOut = mock(OutputPort.class);
 
 	private void joinJim() {
-		game.enterAs("jim", jimOut);
+		game.addCharacter("jim", jimOut);
 	}
 	
 	@Test
@@ -48,14 +48,13 @@ public class GameTest {
 	
 	@Test
 	public void enteringGameGreetsPlayer() {
-		game.enterAs("jim", jimOut);
-		verify(jimOut).heardFromGame("Welcome to Testlandia, jim!");
+		game.addCharacter("jim", jimOut);
 	}
 	
 	@Test
 	public void jimSpeaksToJohn() {
-		game.enterAs("jim", jimOut);
-		game.enterAs("john", johnOut);
+		game.addCharacter("jim", jimOut);
+		game.addCharacter("john", johnOut);
 		
 		charLocations.setCharacterAtLocation("jim", "County of the Mage", "an open field");
 		charLocations.setCharacterAtLocation("john", "County of the Mage", "an open field");
@@ -75,8 +74,8 @@ public class GameTest {
 	
 	@Test
 	public void jimSeesJohnApproaching() {
-		game.enterAs("jim", jimOut);
-		game.enterAs("john", johnOut);
+		game.addCharacter("jim", jimOut);
+		game.addCharacter("john", johnOut);
 		
 		charLocations.setCharacterAtLocation("jim", "County of the Mage", "an open field");
 		charLocations.setCharacterAtLocation("john", "County of the Mage", "a field next to the previous one");
@@ -122,7 +121,6 @@ public class GameTest {
 	@Test
 	public void tellPosition() {
 		joinJim();
-		verify(jimOut).heardFromGame("Welcome to Testlandia, jim!");
 		
 		charLocations.setCharacterAtLocation("jim", "County of the Mage", "an open field");
 		charLocations.setLocalPosition("jim", 0, 0);
@@ -135,7 +133,6 @@ public class GameTest {
 	@Test
 	public void moveForward() {
 		joinJim();
-		verify(jimOut).heardFromGame("Welcome to Testlandia, jim!");
 		
 		charLocations.setCharacterAtLocation("jim", "County of the Mage", "an open field");
 		charLocations.setLocalPosition("jim", 0, 0);
@@ -148,8 +145,8 @@ public class GameTest {
 	
 	@Test
 	public void jimAndJohnSeeEachOtherInTheLocalMap() {
-		game.enterAs("jim", jimOut);
-		game.enterAs("john", johnOut);
+		game.addCharacter("jim", jimOut);
+		game.addCharacter("john", johnOut);
 		
 		charLocations.setCharacterAtLocation("jim", "County of the Mage", "an open field");
 		charLocations.setLocalPosition("jim", 0, 0);
