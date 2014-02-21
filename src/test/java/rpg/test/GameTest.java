@@ -83,8 +83,8 @@ public class GameTest {
 		charLocations.setLocalPosition("john", 0, 0);
 		
 		new Travel("john", "an open field").execute(game);
-		verify(jimOut).sees("john", new LocalPosition(0, 0));
-		verify(johnOut).sees("jim", new LocalPosition(0, 0));
+		verify(jimOut).sees("john", new LocalPosition(0, 0), new LocalMap(5, 5));
+		verify(johnOut).sees("jim", new LocalPosition(0, 0), new LocalMap(5, 5));
 	}
 	
 	@Test
@@ -155,9 +155,9 @@ public class GameTest {
 		charLocations.setLocalPosition("john", 2, 2);
 		
 		new LookAround("jim").execute(game);
-		verify(jimOut).sees("john", new LocalPosition(2, 2));
+		verify(jimOut).sees("john", new LocalPosition(2, 2), new LocalMap(5, 5));
 		
 		new LookAround("john").execute(game);
-		verify(johnOut).sees("jim", new LocalPosition(0, 0));
+		verify(johnOut).sees("jim", new LocalPosition(0, 0), new LocalMap(5, 5));
 	}
 }

@@ -22,8 +22,12 @@ public class Travel implements Command {
 
 	private void notifyNearbyCharacters(CommandContext context) {
 		for (String otherCharacter : context.nearbyCharacters(travelling)) {
-			context.outputPort(otherCharacter).sees(travelling, context.characterLocations().localPosition(travelling));
-			context.outputPort(travelling).sees(otherCharacter, context.characterLocations().localPosition(otherCharacter));
+			context.outputPort(otherCharacter).sees(travelling,
+					context.characterLocations().localPosition(travelling),
+					context.characterLocations().localMap(travelling));
+			context.outputPort(travelling).sees(otherCharacter,
+					context.characterLocations().localPosition(otherCharacter),
+					context.characterLocations().localMap(otherCharacter));
 		}
 	}
 }

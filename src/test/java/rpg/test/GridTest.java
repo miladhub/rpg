@@ -15,7 +15,7 @@ public class GridTest {
 		assertEquals(
 				"|       |       |\n"+
 				"|  you  |       |\n",
-			g.print());
+			g.print("you"));
 	}
 	
 	@Test
@@ -24,7 +24,7 @@ public class GridTest {
 		assertEquals(
 				"|       |       |       |       |       |\n"+
 				"|  you  |       |       |       |       |\n",
-			g.print());
+			g.print("you"));
 	}
 	
 	@Test
@@ -33,7 +33,7 @@ public class GridTest {
 		assertEquals(
 			"|  you  |       |\n"+
 			"|       |       |\n",
-			g.print());
+			g.print("you"));
 	}
 	
 	@Test
@@ -42,7 +42,7 @@ public class GridTest {
 		assertEquals(
 				"|  you  |       |       |       |       |\n"+
 				"|       |       |       |       |       |\n",
-			g.print());
+			g.print("you"));
 	}
 	
 	@Test
@@ -51,7 +51,7 @@ public class GridTest {
 		assertEquals(
 			"|       |  you  |\n"+
 			"|       |       |\n",
-			g.print());
+			g.print("you"));
 	}
 	
 	@Test
@@ -60,7 +60,7 @@ public class GridTest {
 		assertEquals(
 			"|       |       |\n"+
 			"|       |  you  |\n",
-			g.print());
+			g.print("you"));
 	}
 	
 	@Test
@@ -69,7 +69,7 @@ public class GridTest {
 		assertEquals(
 				"|       |       |  you  |       |       |\n"+
 				"|       |       |       |       |       |\n",
-			g.print());
+			g.print("you"));
 	}
 	
 	@Test
@@ -78,6 +78,15 @@ public class GridTest {
 		assertEquals(
 				"|       |       |       |       |       |\n"+
 				"|       |       |       |       |  you  |\n",
-			g.print());
+			g.print("you"));
+	}
+	
+	@Test
+	public void namesAreTrimmed() throws Exception {
+		GridPrinter g = new GridPrinter(new LocalPosition(0, 0), new LocalMap(2, 2));
+		assertEquals(
+				"|       |       |\n"+
+				"|  Joh  |       |\n",
+			g.print("John"));
 	}
 }

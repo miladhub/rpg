@@ -14,7 +14,10 @@ public class GridPrinter {
 		this.localMap = localMap;
 	}
 
-	public String print() {
+	public String print(String whoOrWhat) {
+		if (whoOrWhat.length() > 3) {
+			whoOrWhat = whoOrWhat.substring(0, 3);
+		}
 		String show = "";
 		for (int row = localMap.height() - 1; row >= 0; row--) {
 			if (row != lp.y) {
@@ -27,7 +30,7 @@ public class GridPrinter {
 					if (col != lp.x) {
 						show += "|" + STEP;
 					} else {
-						show += "|  you  ";
+						show += "|  " + whoOrWhat + "  ";
 					}
 				}
 				show += "|\n";

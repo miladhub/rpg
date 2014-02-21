@@ -14,8 +14,8 @@ public class Main {
 	public static void main(String[] args) throws Exception {
 		WorldMap map = WorldMapReader.readFromString(FileUtils.readFileToString(new File("map.txt")));
 		CharacterLocations locations = new CharacterLocations(map);
-		locations.setCharacterAtLocation("Jim", "County of the Wizard", "Witch jungle");
-		locations.setCharacterAtLocation("John", "Realm of the Warrior", "Barracks");
+		locations.setCharacterAtLocation("Jim", "County of the Wizard", "Wizard border");
+		locations.setCharacterAtLocation("John", "Realm of the Warrior", "Warrior border");
 		locations.setLocalPosition("Jim", 0, 0);
 		locations.setLocalPosition("John", 0, 0);
 		final TcpGameServer gameServer = new TcpGameServer("The game", new ClientConsole(), locations);
