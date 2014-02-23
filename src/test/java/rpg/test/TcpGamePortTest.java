@@ -13,6 +13,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import rpg.game.Game;
 import rpg.game.WorldMap;
 import rpg.game.CharacterLocations;
 import rpg.tcp.ServerOutputPort;
@@ -32,7 +33,7 @@ public class TcpGamePortTest {
 	private final ClientStub clientTwo = new ClientStub();
 	private final ExecutorService executor = Executors.newSingleThreadExecutor();
 	private final CyclicBarrier synchPoint = new CyclicBarrier(2);
-	private final TcpGameServer server = new TcpGameServer("Testland", new ServerOutputPort() {
+	private final TcpGameServer server = new TcpGameServer(new ServerOutputPort() {
 		@Override
 		public void listening(int port) {
 			try {
@@ -47,7 +48,7 @@ public class TcpGamePortTest {
 		public void cannotListen(String cause) {
 			synchPoint.reset();
 		}
-	}, charLocations);
+	}, new Game("Testland", charLocations));
 
 	@Before
 	public void connectToGame() throws IOException, InterruptedException, ExecutionException, BrokenBarrierException {

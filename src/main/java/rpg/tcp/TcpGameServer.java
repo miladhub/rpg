@@ -6,20 +6,19 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import rpg.game.Game;
-import rpg.game.CharacterLocations;
+import rpg.game.CommandContext;
 
 public class TcpGameServer {
 	private final ExecutorService pool = Executors.newFixedThreadPool(10);
 	private final ServerOutputPort out;
-	private Game game;
+	private CommandContext game;
 	private ServerSocket welcomeSocket;
 	private volatile boolean shutdown;
 	
-	public TcpGameServer(String worldName, ServerOutputPort out, CharacterLocations characterLocations) {
+	public TcpGameServer(ServerOutputPort out, CommandContext game) {
 		super();
 		this.out = out;
-		game = new Game(worldName, characterLocations);
+		this.game = game;
 	}
 
 	public void listen(int port) {

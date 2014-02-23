@@ -9,4 +9,5 @@ public interface CommandContext {
 	OutputPort outputPort(String character);
 	CharacterLocations characterLocations();
 	Set<String> nearbyCharacters(String character);
+	Set<String> characters();
 }

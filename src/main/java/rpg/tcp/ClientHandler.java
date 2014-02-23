@@ -8,19 +8,19 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.concurrent.Callable;
 
-import rpg.game.Game;
+import rpg.game.CommandContext;
 import rpg.game.LocalMap;
 import rpg.game.LocalPosition;
 import rpg.game.OutputPort;
 
 public class ClientHandler implements Callable<String> {
 	private final Socket clientSocket;
-	private final Game game;
+	private final CommandContext game;
 	private final BufferedReader reader;
 	private final PrintWriter writer;
 	private final OutputPort out;
 
-	public ClientHandler(Game game, final Socket clientSocket) throws IOException {
+	public ClientHandler(CommandContext game, final Socket clientSocket) throws IOException {
 		super();
 		this.game = game;
 		this.clientSocket = clientSocket;

@@ -1,6 +1,5 @@
 package rpg.game;
 
-
 public class TellWhereabout implements Command {
 	private final String character;
 

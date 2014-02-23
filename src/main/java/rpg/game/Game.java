@@ -9,6 +9,7 @@ public class Game implements CommandContext, MovementsListener {
 	private final String worldName;
 	private final Map<String, OutputPort> outs = new HashMap<>();
 	private final CharacterLocations charLocations;
+	private Set<Script> scripts = new HashSet<>();
 
 	public Game(String worldName, CharacterLocations charLocations) {
 		this.worldName = worldName;
@@ -54,7 +55,8 @@ public class Game implements CommandContext, MovementsListener {
 		return others;
 	}
 	
-	private Set<String> characters() {
+	@Override
+	public Set<String> characters() {
 		return outs.keySet();
 	}
 	
@@ -71,5 +73,15 @@ public class Game implements CommandContext, MovementsListener {
 	@Override
 	public void positionChangedTo(String character, LocalPosition localPosition) {
 		outputPort(character).isAt(localPosition, charLocations.localMap(character));
+	}
+
+	public void addScript(Script script) {
+		scripts.add(script);
+	}
+
+	public void tick() {
+		for (Script script : scripts) {
+			script.onTick(this);
+		}
 	}
 }
