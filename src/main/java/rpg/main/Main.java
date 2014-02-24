@@ -44,11 +44,13 @@ public class Main {
 	}
 
 	private void start() {
+		game.startScripts();
 		clock.start();
 		server.listen(6789);
 	}
 
 	private void shutDown() throws IOException {
+		game.stopScripts();
 		clock.stop();
 		server.shutdown();
 	}

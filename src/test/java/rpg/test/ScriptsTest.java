@@ -1,60 +1,153 @@
 package rpg.test;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import rpg.game.CharacterLocations;
-import rpg.game.CommandContext;
 import rpg.game.Game;
 import rpg.game.OutputPort;
 import rpg.game.Script;
-import rpg.game.TellWhereabout;
+import rpg.game.ScriptContext;
 import rpg.game.WorldMap;
 
 public class ScriptsTest {
-	private final class LocationsTeller implements Script {
+	private final Game game = new Game("Testlandia", new CharacterLocations(WorldMap.createEmptyMap()));
+	private final OutputPort jim = mock(OutputPort.class);
+	private final OutputPort john = mock(OutputPort.class);
+	
+	@Before
+	public void createCharacters() {
+		game.addCharacter("jim", jim);
+		game.addCharacter("john", john);
+	}
+	
+	@Test
+	public void scriptSpeaksToCharactersEveryTick() {
+		game.addScript(new BigBrother());
+		
+		game.tick();
+		
+		verify(jim).heardFromGame("Game server is watching you.");
+		verify(john).heardFromGame("Game server is watching you.");
+	}
+	
+	@Test
+	public void sleepingKeepsCharacterBusy() {
+		game.addScript(new Sleep("jim"));		
+		game.addScript(new Walk("jim"));
+		
+		game.startScripts();
+		game.tick();
+		game.stopScripts();
+		
+		verify(jim).heardFromGame("zzz...");
+		verify(jim, never()).heardFromGame("walking");
+	}
+	
+	@Test
+	public void poisonCreepsWhileSleeping() {
+		game.addScript(new Sleep("jim"));		
+		game.addScript(new Poison("jim"));
+		
+		game.startScripts();
+		game.tick();
+		game.stopScripts();
+		
+		verify(jim).heardFromGame("zzz...");
+		verify(jim).heardFromGame("you feel weaker!");
+	}
+
+	@Test
+	public void fightInterruptsSleep() {
+		game.addScript(new Sleep("jim"));		
+		game.addScript(new Fight("jim"));
+		
+		game.startScripts();
+		game.tick();
+		game.tick();
+		game.stopScripts();
+		
+		verify(jim).heardFromGame("zzz...");
+		verify(jim, times(2)).heardFromGame("slash!");
+	}
+	
+	private static abstract class BaseScript implements Script {
 		@Override
-		public void onTick(CommandContext ctx) {
-			for (String character : ctx.characters()) {
-				new TellWhereabout(character).execute(ctx);
+		public void onStart(ScriptContext context) {}
+
+		@Override
+		public void onStop(ScriptContext context) {}
+	}
+	
+	private static class Fight extends BaseScript {
+		private String character;
+
+		public Fight(String character) {
+			this.character = character;
+		}
+		
+		@Override
+		public void onTick(ScriptContext context) {
+			context.interrupt(character);
+			context.outputPort(character).heardFromGame("slash!");
+		}
+	}
+	
+	private static class Poison extends BaseScript {
+		private String character;
+
+		public Poison(String character) {
+			this.character = character;
+		}
+		
+		@Override
+		public void onTick(ScriptContext context) {
+			context.outputPort(character).heardFromGame("you feel weaker!");
+		}
+	}
+	
+	private static class Walk extends BaseScript {
+		private String character;
+
+		public Walk(String character) {
+			this.character = character;
+		}
+
+		@Override
+		public void onTick(ScriptContext context) {
+			if (!context.characterIsBusy(character)) {
+				context.outputPort(character).heardFromGame("sleep walking");
 			}
 		}
 	}
 
-	private final WorldMap map = new WorldMap.WorldMapBuilder()
-		.addRegion("County of the Mage")
-		.addPlace("an open field").size("5x5")
-		.addPlace("a field next to the previous one")
-		.addPlace("the Mage border")
-		.addRegion("the County of the Warrior")
-		.addPlace("the Warrior border")
-		.createMap();
-
-	private final CharacterLocations charLocations = new CharacterLocations(map);
-
-	private final Game game = new Game("Testlandia", charLocations);
-
-	private final OutputPort jimOut = mock(OutputPort.class);
-	private final OutputPort johnOut = mock(OutputPort.class);
-	
-	@Before
-	public void createCharacters() {
-		charLocations.setCharacterAtLocation("jim", "County of the Mage", "an open field");
-		charLocations.setCharacterAtLocation("john", "County of the Mage", "an open field");
-		game.addCharacter("jim", jimOut);
-		game.addCharacter("john", johnOut);
+	private static class BigBrother extends BaseScript {
+		@Override
+		public void onTick(ScriptContext context) {
+			for (String character : context.characters()) {
+				context.outputPort(character).heardFromGame(
+						"Game server is watching you.");
+			}
+		}
 	}
-	
-	@Test
-	public void scriptTellsCurrentLocationEveryTick() {
-		game.addScript(new LocationsTeller());
+
+	private static class Sleep extends BaseScript {
+		private String character;
+
+		public Sleep(String character) {
+			this.character = character;
+		}
+
+		@Override
+		public void onStart(ScriptContext context) {
+			context.keepBusy(character, this);
+		}
 		
-		game.tick();
-		
-		verify(jimOut).heardFromGame("You're in an open field, County of the Mage.");
-		verify(johnOut).heardFromGame("You're in an open field, County of the Mage.");
+		@Override
+		public void onTick(ScriptContext context) {
+			context.outputPort(character).heardFromGame("zzz...");
+		}
 	}
 }
