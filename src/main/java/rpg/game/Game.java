@@ -11,6 +11,7 @@ public class Game implements ScriptContext, MovementsListener {
 	private final CharacterLocations charLocations;
 	private Set<Script> runningScripts = new HashSet<>();
 	private Map<String, Script> blockingScripts = new HashMap<>();
+	private Map<Script, Integer> durations = new HashMap<>();
 
 	public Game(String worldName, CharacterLocations charLocations) {
 		this.worldName = worldName;
@@ -79,10 +80,22 @@ public class Game implements ScriptContext, MovementsListener {
 	public void addScript(Script script) {
 		runningScripts.add(script);
 	}
+	
+	public void addScriptWithDuration(Script script, int durationInSeconds) {
+		runningScripts.add(script);
+		durations.put(script, durationInSeconds);
+	}
 
 	public void tick() {
 		for (Script script : new HashSet<>(runningScripts)) {
 			script.onTick(this);
+			if (durations.containsKey(script)) {
+				durations.put(script, durations.get(script) - 1);
+				if (durations.get(script) == 0) {
+					durations.remove(script);
+					runningScripts.remove(script);
+				}
+			}
 		}
 	}
 

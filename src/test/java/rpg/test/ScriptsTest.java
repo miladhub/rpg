@@ -34,6 +34,17 @@ public class ScriptsTest {
 	}
 	
 	@Test
+	public void jimSleepsForTwoSeconds() {
+		game.addScriptWithDuration(new Sleep("jim"), 2);
+		
+		game.tick();
+		game.tick();
+		game.tick();
+		
+		verify(jim, times(2)).heardFromGame("zzz...");
+	}
+	
+	@Test
 	public void sleepingKeepsCharacterBusy() {
 		game.addScript(new Sleep("jim"));		
 		game.addScript(new Walk("jim"));
@@ -71,6 +82,40 @@ public class ScriptsTest {
 		
 		verify(jim).heardFromGame("zzz...");
 		verify(jim, times(2)).heardFromGame("slash!");
+	}
+	
+	@Test
+	public void fightInterruptsSleepThatWasSupposedToLastTenSeconds() {
+		game.addScriptWithDuration(new Sleep("jim"), 10);		
+		
+		game.startScripts();
+		game.tick();
+		game.tick();
+		game.addScript(new Fight("jim"));
+		game.tick();
+		game.tick();
+		game.tick();
+		game.stopScripts();
+		
+		verify(jim, atMost(3)).heardFromGame("zzz...");
+		verify(jim, times(3)).heardFromGame("slash!");
+	}
+	
+	@Test
+	public void poisonActsWhileSleepingAndLastTwoSeconds() {
+		game.addScriptWithDuration(new Sleep("jim"), 10);		
+		
+		game.startScripts();
+		game.tick();
+		game.tick();
+		game.addScriptWithDuration(new Poison("jim"), 2);
+		game.tick();
+		game.tick();
+		game.tick();
+		game.stopScripts();
+		
+		verify(jim, times(5)).heardFromGame("zzz...");
+		verify(jim, times(2)).heardFromGame("you feel weaker!");
 	}
 	
 	private static abstract class BaseScript implements Script {
