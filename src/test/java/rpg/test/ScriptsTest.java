@@ -1,6 +1,7 @@
 package rpg.test;
 
 import static org.mockito.Mockito.*;
+import static rpg.game.Scripts.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -35,13 +36,27 @@ public class ScriptsTest {
 	
 	@Test
 	public void jimSleepsForTwoSeconds() {
-		game.addScriptWithDuration(new Sleep("jim"), 2);
+		game.addScript(aScript(new Sleep("jim")).lasting(2));
 		
 		game.tick();
 		game.tick();
 		game.tick();
 		
 		verify(jim, times(2)).heardFromGame("zzz...");
+	}
+	
+	@Test
+	public void poisonActsEveryThreeSeconds() {
+		game.addScript(aScript(new Poison("jim")).lasting(10).every(3));
+		
+		game.tick();
+		game.tick();
+		game.tick();
+		game.tick();
+		game.tick();
+		game.tick();
+		
+		verify(jim, times(2)).heardFromGame("you feel weaker!");
 	}
 	
 	@Test
@@ -86,7 +101,7 @@ public class ScriptsTest {
 	
 	@Test
 	public void fightInterruptsSleepThatWasSupposedToLastTenSeconds() {
-		game.addScriptWithDuration(new Sleep("jim"), 10);		
+		game.addScript(aScript(new Sleep("jim")).lasting(10));
 		
 		game.startScripts();
 		game.tick();
@@ -103,12 +118,12 @@ public class ScriptsTest {
 	
 	@Test
 	public void poisonActsWhileSleepingAndLastTwoSeconds() {
-		game.addScriptWithDuration(new Sleep("jim"), 10);		
+		game.addScript(aScript(new Sleep("jim")).lasting(10));		
 		
 		game.startScripts();
 		game.tick();
 		game.tick();
-		game.addScriptWithDuration(new Poison("jim"), 2);
+		game.addScript(aScript(new Poison("jim")).lasting(2));
 		game.tick();
 		game.tick();
 		game.tick();
@@ -163,7 +178,7 @@ public class ScriptsTest {
 		@Override
 		public void onTick(ScriptContext context) {
 			if (!context.characterIsBusy(character)) {
-				context.outputPort(character).heardFromGame("sleep walking");
+				context.outputPort(character).heardFromGame("walking");
 			}
 		}
 	}

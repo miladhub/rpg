@@ -12,6 +12,8 @@ public class Game implements ScriptContext, MovementsListener {
 	private Set<Script> runningScripts = new HashSet<>();
 	private Map<String, Script> blockingScripts = new HashMap<>();
 	private Map<Script, Integer> durations = new HashMap<>();
+	private Map<Script, Integer> executionCounters = new HashMap<>();
+	private Map<Script, ScriptSpecification> scriptSpecs = new HashMap<>();
 
 	public Game(String worldName, CharacterLocations charLocations) {
 		this.worldName = worldName;
@@ -78,23 +80,48 @@ public class Game implements ScriptContext, MovementsListener {
 	}
 
 	public void addScript(Script script) {
-		runningScripts.add(script);
+		addScript(Scripts.aScript(script));
 	}
 	
-	public void addScriptWithDuration(Script script, int durationInSeconds) {
-		runningScripts.add(script);
-		durations.put(script, durationInSeconds);
+	public void addScript(ScriptSpecificationBuilder specBuilder) {
+		ScriptSpecification spec = specBuilder.build();
+		runningScripts.add(spec.script());
+		scriptSpecs.put(spec.script(), spec);
+		if (spec.hasDuration()) {
+			durations.put(spec.script(), spec.durationInSeconds());
+		}
+		executionCounters.put(spec.script(), 0);
 	}
 
 	public void tick() {
 		for (Script script : new HashSet<>(runningScripts)) {
-			script.onTick(this);
-			if (durations.containsKey(script)) {
-				durations.put(script, durations.get(script) - 1);
-				if (durations.get(script) == 0) {
-					durations.remove(script);
-					runningScripts.remove(script);
-				}
+			if (mustTick(script)) {
+				script.onTick(this);
+			}
+			checkIfScriptHasFinished(script);
+		}
+	}
+
+	private boolean mustTick(Script script) {
+		if (!executionCounters.containsKey(script)) {
+			return true;
+		}
+		
+		if (executionCounters.get(script) == 0) {
+			executionCounters.put(script, scriptSpecs.get(script).frequencyInSeconds());
+			return true;
+		} else {
+			executionCounters.put(script, executionCounters.get(script) - 1);
+			return false;
+		}
+	}
+
+	private void checkIfScriptHasFinished(Script script) {
+		if (durations.containsKey(script)) {
+			durations.put(script, durations.get(script) - 1);
+			if (durations.get(script) == 0) {
+				durations.remove(script);
+				runningScripts.remove(script);
 			}
 		}
 	}
@@ -127,6 +154,7 @@ public class Game implements ScriptContext, MovementsListener {
 			Script interruptedScript = blockingScripts.remove(character);
 			interruptedScript.onStop(this);
 			runningScripts.remove(interruptedScript);
+			scriptSpecs.remove(interruptedScript);
 		}
 	}
 }
