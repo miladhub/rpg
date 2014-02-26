@@ -47,7 +47,7 @@ public class ScriptsTest {
 	
 	@Test
 	public void poisonActsEveryThreeSeconds() {
-		game.addScript(aScript(new Poison("jim")).lasting(10).every(3));
+		game.addScript(aScript(new Poison("jim")).lasting(10).tickingEvery(3));
 		
 		game.tick();
 		game.tick();

@@ -14,7 +14,7 @@ public class ScriptSpecificationBuilder {
 		return this;
 	}
 	
-	public ScriptSpecificationBuilder every(int seconds) {
+	public ScriptSpecificationBuilder tickingEvery(int seconds) {
 		this.frequencyInSeconds = seconds;
 		return this;
 	}
