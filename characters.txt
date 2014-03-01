@@ -1,0 +1,2 @@
+Jim	County of the Wizard	Wizard border	0, 0
+John	Realm of the Warrior	Warrior border	0, 0

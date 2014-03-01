@@ -3,12 +3,11 @@ package rpg.main;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.commons.io.FileUtils;
-
+import rpg.game.CharacterReader;
 import rpg.game.Game;
 import rpg.game.WorldMap;
-import rpg.game.WorldMapReader;
 import rpg.game.CharacterLocations;
+import rpg.game.WorldMapReader;
 import rpg.tcp.TcpGameServer;
 
 public class Main {
@@ -25,7 +24,7 @@ public class Main {
 	}
 
 	private void setup() throws IOException {
-		map = readMapFromFile();
+		map = WorldMapReader.readMapFromFile(new File("map.txt"));
 		game = createGame();
 		server = createServer();
 		clock = createClock();
@@ -63,21 +62,13 @@ public class Main {
 		return new TcpGameServer(new ClientConsole(), game);
 	}
 
-	private Game createGame() {
-		CharacterLocations locations = createFakeCharacters(map);
+	private Game createGame() throws IOException {
+		CharacterLocations locations = readCharacters(map);
 		return new Game("The game", locations);
 	}
 
-	private CharacterLocations createFakeCharacters(WorldMap map) {
-		CharacterLocations locations = new CharacterLocations(map);
-		locations.setCharacterAtLocation("Jim", "County of the Wizard", "Wizard border");
-		locations.setCharacterAtLocation("John", "Realm of the Warrior", "Warrior border");
-		locations.setLocalPosition("Jim", 0, 0);
-		locations.setLocalPosition("John", 0, 0);
-		return locations;
-	}
-
-	private WorldMap readMapFromFile() throws IOException {
-		return WorldMapReader.readFromString(FileUtils.readFileToString(new File("map.txt")));
+	private CharacterLocations readCharacters(WorldMap map) throws IOException {
+		CharacterReader charLocReader = new CharacterReader(map);
+		return charLocReader.readFromFile(new File("characters.txt"));
 	}
 }

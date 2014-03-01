@@ -1,7 +1,9 @@
 package rpg.game;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -9,7 +11,7 @@ public class Game implements ScriptContext, MovementsListener {
 	private final String worldName;
 	private final Map<String, OutputPort> outs = new HashMap<>();
 	private final CharacterLocations charLocations;
-	private Set<Script> runningScripts = new HashSet<>();
+	private List<Script> runningScripts = new ArrayList<>();
 	private Map<String, Script> blockingScripts = new HashMap<>();
 	private Map<Script, Integer> durations = new HashMap<>();
 	private Map<Script, Integer> executionCounters = new HashMap<>();
@@ -94,7 +96,7 @@ public class Game implements ScriptContext, MovementsListener {
 	}
 
 	public void tick() {
-		for (Script script : new HashSet<>(runningScripts)) {
+		for (Script script : new ArrayList<>(runningScripts)) {
 			if (mustTick(script)) {
 				script.onTick(this);
 			}

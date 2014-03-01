@@ -1,5 +1,10 @@
 package rpg.game;
 
+import java.io.File;
+import java.io.IOException;
+
+import org.apache.commons.io.FileUtils;
+
 import rpg.game.WorldMap.WorldMapBuilder;
 
 public class WorldMapReader {
@@ -20,5 +25,9 @@ public class WorldMapReader {
 			}
 		}
 		return builder.createMap();
+	}
+
+	public static WorldMap readMapFromFile(File file) throws IOException {
+		return WorldMapReader.readFromString(FileUtils.readFileToString(file));
 	}
 }

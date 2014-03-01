@@ -5,10 +5,10 @@ import java.util.Map;
 import java.util.Set;
 
 public class CharacterLocations {
-	private final Map<String, Location> charsLocations = new HashMap<>();
 	private final WorldMap map;
+	private final Map<String, Location> charsLocations = new HashMap<>();
+	private final Map<String, LocalPosition> positions = new HashMap<>();
 	private final MovementsListeners listeners = new MovementsListeners();
-	private Map<String, LocalPosition> positions = new HashMap<>();
 	
 	public CharacterLocations(WorldMap map) {
 		super();
@@ -69,5 +69,38 @@ public class CharacterLocations {
 
 	public LocalMap localMap(String character) {
 		return map.localMap(whereIs(character));
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((charsLocations == null) ? 0 : charsLocations.hashCode());
+		result = prime * result
+				+ ((positions == null) ? 0 : positions.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		CharacterLocations other = (CharacterLocations) obj;
+		if (charsLocations == null) {
+			if (other.charsLocations != null)
+				return false;
+		} else if (!charsLocations.equals(other.charsLocations))
+			return false;
+		if (positions == null) {
+			if (other.positions != null)
+				return false;
+		} else if (!positions.equals(other.positions))
+			return false;
+		return true;
 	}
 }
