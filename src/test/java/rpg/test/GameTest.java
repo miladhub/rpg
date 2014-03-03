@@ -5,12 +5,11 @@ import static org.mockito.Mockito.*;
 
 import org.junit.Test;
 
-import rpg.game.Direction;
 import rpg.game.Game;
 import rpg.game.LocalMap;
 import rpg.game.LocalPosition;
 import rpg.game.LookAround;
-import rpg.game.Move;
+import rpg.game.NotInGameException;
 import rpg.game.Say;
 import rpg.game.OutputPort;
 import rpg.game.TellPosition;
@@ -51,6 +50,11 @@ public class GameTest {
 		game.addCharacter("jim", jimOut);
 	}
 	
+	@Test(expected = NotInGameException.class)
+	public void executingCommandWithoutCharacterEndsGame() {
+		game.outputPort(null);
+	}
+	
 	@Test
 	public void jimSpeaksToJohn() {
 		game.addCharacter("jim", jimOut);
@@ -63,6 +67,22 @@ public class GameTest {
 		verify(johnOut).heardFrom("jim", "hi");
 		verify(jimOut, never()).heardFrom(same("jim"), anyString());
 	}
+	
+	@Test
+	public void jimSpeaksToKenWhosTooFar() {
+		game.addCharacter("jim", jimOut);
+		game.addCharacter("john", johnOut);
+		OutputPort kenOut = mock(OutputPort.class);
+		game.addCharacter("ken", kenOut);
+		
+		charLocations.setCharacterAtLocation("jim", "County of the Mage", "an open field");
+		charLocations.setCharacterAtLocation("john", "County of the Mage", "an open field");
+		charLocations.setCharacterAtLocation("ken", "the County of the Warrior", "the Warrior border");
+		
+		new Say("jim", "hi").execute(game);
+		verify(kenOut, never()).heardFrom(same("jim"), anyString());
+	}
+	
 	
 	@Test
 	public void jimAsksForHisWhereabout() {
@@ -119,6 +139,15 @@ public class GameTest {
 	}
 	
 	@Test
+	public void youCantSkipPlaces() {
+		joinJim();
+		charLocations.setCharacterAtLocation("jim", "County of the Mage", "an open field");
+		
+		new Travel("jim", "the Mage border").execute(game);
+		verify(jimOut).heardFromGame("You can't travel to the Mage border from your current location.");
+	}
+	
+	@Test
 	public void tellPosition() {
 		joinJim();
 		
@@ -128,19 +157,6 @@ public class GameTest {
 		new TellPosition("jim").execute(game);
 
 		verify(jimOut).isAt(new LocalPosition(0, 0), new LocalMap(5, 5));
-	}
-	
-	@Test
-	public void moveForward() {
-		joinJim();
-		
-		charLocations.setCharacterAtLocation("jim", "County of the Mage", "an open field");
-		charLocations.setLocalPosition("jim", 0, 0);
-		
-		new Move("jim", Direction.Forward).execute(game);
-		new TellPosition("jim").execute(game);
-
-		verify(jimOut, times(2)).isAt(new LocalPosition(0, 1), new LocalMap(5, 5));
 	}
 	
 	@Test

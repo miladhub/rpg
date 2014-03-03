@@ -40,8 +40,8 @@ public class Game implements ScriptContext, MovementsListener {
 	
 	@Override
 	public OutputPort outputPort(String character) {
-		if (!outs.containsKey(character)) {
-			throw new IllegalStateException("No output port defined for character " + character);
+		if (character == null) {
+			throw new NotInGameException();
 		}
 		return outs.get(character);
 	}
@@ -105,10 +105,6 @@ public class Game implements ScriptContext, MovementsListener {
 	}
 
 	private boolean mustTick(Script script) {
-		if (!executionCounters.containsKey(script)) {
-			return true;
-		}
-		
 		if (executionCounters.get(script) == 0) {
 			executionCounters.put(script, scriptSpecs.get(script).frequencyInSeconds());
 			return true;

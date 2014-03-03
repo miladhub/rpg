@@ -1,10 +1,5 @@
 package rpg.game;
 
-import java.io.File;
-import java.io.IOException;
-
-import org.apache.commons.io.FileUtils;
-
 public class CharacterReader {
 	private final CharacterLocations charLocations;
 
@@ -32,9 +27,5 @@ public class CharacterReader {
 		int x = Integer.parseInt(xyTokens[0].trim());
 		int y = Integer.parseInt(xyTokens[1].trim());
 		charLocations.setLocalPosition(character, x, y);
-	}
-
-	public CharacterLocations readFromFile(File file) throws IOException {
-		return readFromString(FileUtils.readFileToString(file));
 	}
 }

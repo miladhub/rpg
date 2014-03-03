@@ -11,6 +11,7 @@ import java.util.concurrent.Callable;
 import rpg.game.CommandContext;
 import rpg.game.LocalMap;
 import rpg.game.LocalPosition;
+import rpg.game.NotInGameException;
 import rpg.game.OutputPort;
 
 public class ClientHandler implements Callable<String> {
@@ -64,6 +65,8 @@ public class ClientHandler implements Callable<String> {
 					commands.createCommand(command).execute(game);
 				} catch (UnknownCommandException e) {
 					writer.println("What does that mean?");
+				} catch (NotInGameException e) {
+					writer.println("Enter the game first.");
 				}
 			}
 			return "done";

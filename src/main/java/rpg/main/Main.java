@@ -3,6 +3,8 @@ package rpg.main;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.commons.io.FileUtils;
+
 import rpg.game.CharacterReader;
 import rpg.game.Game;
 import rpg.game.WorldMap;
@@ -16,18 +18,22 @@ public class Main {
 	private TcpGameServer server;
 	private Clock clock;
 
+	public Main(String gameName, String mapFile, String charactersFile) throws IOException {
+		map = WorldMapReader.readFromString(FileUtils.readFileToString(new File(mapFile)));
+		game = new Game(gameName, readCharactersFromFile(map, new File(charactersFile)));
+		server = new TcpGameServer(new ClientConsole(), game);
+		clock = new Clock(game);
+	}
+	
+	private CharacterLocations readCharactersFromFile(WorldMap map, File charactersFile) throws IOException {
+		CharacterReader charLocReader = new CharacterReader(map);
+		return charLocReader.readFromString(FileUtils.readFileToString(charactersFile));
+	}
+	
 	public static void main(String[] args) throws Exception {
-		final Main main = new Main();
-		main.setup();
+		final Main main = new Main("The game", "map.txt", "characters.txt");
 		addShutdownHook(main);
 		main.start();
-	}
-
-	private void setup() throws IOException {
-		map = WorldMapReader.readMapFromFile(new File("map.txt"));
-		game = createGame();
-		server = createServer();
-		clock = createClock();
 	}
 
 	private static void addShutdownHook(final Main main) {
@@ -52,23 +58,5 @@ public class Main {
 		game.stopScripts();
 		clock.stop();
 		server.shutdown();
-	}
-	
-	private Clock createClock() {
-		return new Clock(game);
-	}
-
-	private TcpGameServer createServer() {
-		return new TcpGameServer(new ClientConsole(), game);
-	}
-
-	private Game createGame() throws IOException {
-		CharacterLocations locations = readCharacters(map);
-		return new Game("The game", locations);
-	}
-
-	private CharacterLocations readCharacters(WorldMap map) throws IOException {
-		CharacterReader charLocReader = new CharacterReader(map);
-		return charLocReader.readFromFile(new File("characters.txt"));
 	}
 }

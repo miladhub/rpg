@@ -58,9 +58,13 @@ public class TcpGamePortTest {
 				server.listen(6789);
 			}
 		});
-		synchPoint.await();
-		charLocations.setCharacterAtLocation("jim", "County of the Mage", "an open field");
-		charLocations.setCharacterAtLocation("john", "County of the Mage", "an open field");
+		try {
+			synchPoint.await();
+			charLocations.setCharacterAtLocation("jim", "County of the Mage", "an open field");
+			charLocations.setCharacterAtLocation("john", "County of the Mage", "an open field");
+		} catch (BrokenBarrierException e) {
+			throw new AssertionError("Connection failed", e);
+		}
 	}
 
 	@Test
