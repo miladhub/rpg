@@ -8,7 +8,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.concurrent.Callable;
 
-import rpg.game.CommandContext;
+import rpg.game.CommandExecutor;
 import rpg.game.LocalMap;
 import rpg.game.LocalPosition;
 import rpg.game.NotInGameException;
@@ -16,12 +16,12 @@ import rpg.game.OutputPort;
 
 public class ClientHandler implements Callable<String> {
 	private final Socket clientSocket;
-	private final CommandContext game;
+	private final CommandExecutor game;
 	private final BufferedReader reader;
 	private final PrintWriter writer;
 	private final OutputPort out;
 
-	public ClientHandler(CommandContext game, final Socket clientSocket) throws IOException {
+	public ClientHandler(CommandExecutor game, final Socket clientSocket) throws IOException {
 		super();
 		this.game = game;
 		this.clientSocket = clientSocket;
@@ -62,7 +62,7 @@ public class ClientHandler implements Callable<String> {
 			String command;
 			while ((command = reader.readLine()) != null) {
 				try {
-					commands.createCommand(command).execute(game);
+					game.execute(commands.createCommand(command));
 				} catch (UnknownCommandException e) {
 					writer.println("What does that mean?");
 				} catch (NotInGameException e) {

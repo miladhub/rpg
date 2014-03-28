@@ -9,12 +9,22 @@ import org.junit.Test;
 import rpg.game.CharacterLocations;
 import rpg.game.Game;
 import rpg.game.OutputPort;
+import rpg.game.Say;
 import rpg.game.Script;
 import rpg.game.ScriptContext;
 import rpg.game.WorldMap;
 
 public class ScriptsTest {
-	private final Game game = new Game("Testlandia", new CharacterLocations(WorldMap.createEmptyMap()));
+	private final WorldMap map = new WorldMap.WorldMapBuilder()
+		.addRegion("County of the Mage")
+		.addPlace("an open field").size("5x5")
+		.addPlace("a field next to the previous one")
+		.addPlace("the Mage border")
+		.addRegion("the County of the Warrior")
+		.addPlace("the Warrior border")
+		.createMap();
+	private final CharacterLocations charLocations = new CharacterLocations(map);
+	private final Game game = new Game("Testlandia", charLocations);
 	private final OutputPort jim = mock(OutputPort.class);
 	private final OutputPort john = mock(OutputPort.class);
 	
@@ -131,6 +141,19 @@ public class ScriptsTest {
 		
 		verify(jim, times(5)).heardFromGame("zzz...");
 		verify(jim, times(2)).heardFromGame("you feel weaker!");
+	}
+	
+	@Test
+	public void cannotTalkWhileSleeping() {
+		game.addScript(new Sleep("jim"));
+		game.startScripts();
+		
+		charLocations.setCharacterAtLocation("jim", "County of the Mage", "an open field");
+		charLocations.setCharacterAtLocation("john", "County of the Mage", "an open field");
+		
+		game.execute(new Say("jim", "hello"));
+		
+		verify(john, never()).heardFrom(eq("jim"), anyString());
 	}
 	
 	private static abstract class BaseScript implements Script {

@@ -13,4 +13,9 @@ public class TellWhereabout implements Command {
 		commandContext.outputPort(character).heardFromGame(
 				"You're in " + location.place() + ", " + location.region() + ".");		
 	}
+
+	@Override
+	public String character() {
+		return character;
+	}
 }

@@ -12,4 +12,9 @@ public class TellPosition implements Command {
 		LocalPosition pos = commandContext.characterLocations().localPosition(character);
 		commandContext.outputPort(character).isAt(pos, commandContext.characterLocations().localMap(character));
 	}
+
+	@Override
+	public String character() {
+		return character;
+	}
 }

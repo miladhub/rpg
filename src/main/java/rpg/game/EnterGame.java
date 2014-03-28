@@ -15,4 +15,9 @@ public class EnterGame implements Command {
 		commandContext.outputPort(player).heardFromGame("Welcome to " + commandContext.worldName() + ", " 
 				+ player + "!");
 	}
+
+	@Override
+	public String character() {
+		return player;
+	}
 }

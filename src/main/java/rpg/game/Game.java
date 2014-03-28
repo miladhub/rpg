@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class Game implements ScriptContext, MovementsListener {
+public class Game implements CommandExecutor, ScriptContext, CommandContext, MovementsListener {
 	private final String worldName;
 	private final Map<String, OutputPort> outs = new HashMap<>();
 	private final CharacterLocations charLocations;
@@ -153,6 +153,13 @@ public class Game implements ScriptContext, MovementsListener {
 			interruptedScript.onStop(this);
 			runningScripts.remove(interruptedScript);
 			scriptSpecs.remove(interruptedScript);
+		}
+	}
+
+	@Override
+	public void execute(Command command) {
+		if (!characterIsBusy(command.character())) {
+			command.execute(this);
 		}
 	}
 }

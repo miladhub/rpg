@@ -14,4 +14,9 @@ public class TellWhatsNear implements Command {
 			commandContext.outputPort(character).heardFromGame("\t" + near.place());
 		}
 	}
+
+	@Override
+	public String character() {
+		return character;
+	}
 }

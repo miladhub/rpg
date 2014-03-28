@@ -30,4 +30,9 @@ public class Travel implements Command {
 					context.characterLocations().localMap(otherCharacter));
 		}
 	}
+
+	@Override
+	public String character() {
+		return travelling;
+	}
 }

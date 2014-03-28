@@ -13,4 +13,9 @@ public class Move implements Command {
 	public void execute(CommandContext context) {
 		context.characterLocations().move(character, dir);		
 	}
+
+	@Override
+	public String character() {
+		return character;
+	}
 }

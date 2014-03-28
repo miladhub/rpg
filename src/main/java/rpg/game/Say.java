@@ -15,4 +15,9 @@ public class Say implements Command {
 			context.outputPort(otherCharacter).heardFrom(speaker, what);
 		}
 	}
+
+	@Override
+	public String character() {
+		return speaker;
+	}
 }

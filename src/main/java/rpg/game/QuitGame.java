@@ -14,4 +14,9 @@ public class QuitGame implements Command {
 		port.endSession();
 		commandContext.removeCharacter(character);
 	}
+
+	@Override
+	public String character() {
+		return character;
+	}
 }

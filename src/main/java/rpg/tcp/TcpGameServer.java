@@ -6,16 +6,16 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import rpg.game.CommandContext;
+import rpg.game.CommandExecutor;
 
 public class TcpGameServer {
 	private final ExecutorService pool = Executors.newFixedThreadPool(10);
 	private final ServerOutputPort out;
-	private CommandContext game;
+	private CommandExecutor game;
 	private ServerSocket welcomeSocket;
 	private volatile boolean shutdown;
 	
-	public TcpGameServer(ServerOutputPort out, CommandContext game) {
+	public TcpGameServer(ServerOutputPort out, CommandExecutor game) {
 		super();
 		this.out = out;
 		this.game = game;

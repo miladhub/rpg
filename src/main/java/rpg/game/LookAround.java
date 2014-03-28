@@ -20,4 +20,8 @@ public class LookAround implements Command {
 		}
 	}
 
+	@Override
+	public String character() {
+		return looking;
+	}
 }
