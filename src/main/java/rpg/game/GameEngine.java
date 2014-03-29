@@ -16,7 +16,7 @@ public class GameEngine implements ScriptContext, ScriptRunner {
 	private final Map<Script, Integer> executionCounters = new HashMap<>();
 	private final Map<Script, ScriptSpecification> scriptSpecs = new HashMap<>();
 
-	public GameEngine(Game game, CharacterLocations charLocations) {
+	public GameEngine(GameContext game, CharacterLocations charLocations) {
 		this.game = game;
 		this.charLocations = charLocations;
 	}
