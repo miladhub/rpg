@@ -64,7 +64,7 @@ public class CharacterLocations {
 			positions.put(character, new LocalPosition(pos.x + 1, pos.y));
 			break;
 		}
-		listeners.notifyPositionChanged(character, localPosition(character));
+		listeners.notifyPositionChanged(character, localPosition(character), localMap(character));
 	}
 
 	public LocalMap localMap(String character) {

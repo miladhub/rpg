@@ -16,9 +16,9 @@ public class MovementsListeners {
 		}
 	}
 
-	public void notifyPositionChanged(String character, LocalPosition localPosition) {
+	public void notifyPositionChanged(String character, LocalPosition localPosition, LocalMap localMap) {
 		for (MovementsListener l : listeners) {
-			l.positionChangedTo(character, localPosition);
+			l.positionChangedTo(character, localPosition, localMap);
 		}
 	}
 }
