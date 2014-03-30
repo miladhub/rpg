@@ -148,7 +148,7 @@ public class ScriptsTest {
 		charLocations.setCharacterAtLocation("jim", "County of the Mage", "an open field");
 		charLocations.setCharacterAtLocation("john", "County of the Mage", "an open field");
 		
-		game.execute(new Say("jim", "hello"));
+		game.execute("jim", new Say("hello"));
 		
 		verify(john, never()).heardFrom(eq("jim"), anyString());
 	}
@@ -164,7 +164,7 @@ public class ScriptsTest {
 		charLocations.setCharacterAtLocation("jim", "County of the Mage", "an open field");
 		charLocations.setCharacterAtLocation("john", "County of the Mage", "an open field");
 		
-		game.execute(new Say("jim", "hello"));
+		game.execute("jim", new Say("hello"));
 		
 		verify(john).heardFrom("jim", "hello");
 	}

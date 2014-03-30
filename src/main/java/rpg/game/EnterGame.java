@@ -1,23 +1,16 @@
 package rpg.game;
 
 public class EnterGame implements Command {
-	private final String player;
 	private final OutputPort out;
 
-	public EnterGame(String player, OutputPort out) {
-		this.player = player;
+	public EnterGame(OutputPort out) {
 		this.out = out;
 	}
 
 	@Override
-	public void execute(CommandContext commandContext) {
-		commandContext.addCharacter(player, out);
-		commandContext.outputPort(player).heardFromGame("Welcome to " + commandContext.worldName() + ", " 
-				+ player + "!");
-	}
-
-	@Override
-	public String character() {
-		return player;
+	public void execute(String character, CommandContext commandContext) {
+		commandContext.addCharacter(character, out);
+		commandContext.outputPort(character).heardFromGame("Welcome to " + commandContext.worldName() + ", " 
+				+ character + "!");
 	}
 }

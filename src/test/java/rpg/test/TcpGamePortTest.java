@@ -55,7 +55,7 @@ public class TcpGamePortTest {
 		executor.submit(new Runnable() {
 			@Override
 			public void run() {
-				server.listen(6789);
+				server.listen(6799);
 			}
 		});
 		try {

@@ -1,27 +1,16 @@
 package rpg.game;
 
 public class LookAround implements Command {
-
-	private String looking;
-	public LookAround(String looking) {
-		this.looking = looking;
-	}
-
 	@Override
-	public void execute(CommandContext commandContext) {
-		notifyNearbyCharacters(commandContext);
+	public void execute(String character, CommandContext commandContext) {
+		notifyNearbyCharacters(character, commandContext);
 	}
 	
-	private void notifyNearbyCharacters(CommandContext context) {
-		for (String otherCharacter : context.nearbyCharacters(looking)) {
-			context.outputPort(looking).sees(otherCharacter,
+	private void notifyNearbyCharacters(String character, CommandContext context) {
+		for (String otherCharacter : context.nearbyCharacters(character)) {
+			context.outputPort(character).sees(otherCharacter,
 					context.characterLocations().localPosition(otherCharacter),
 					context.characterLocations().localMap(otherCharacter));
 		}
-	}
-
-	@Override
-	public String character() {
-		return looking;
 	}
 }

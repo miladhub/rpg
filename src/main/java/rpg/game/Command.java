@@ -1,6 +1,5 @@
 package rpg.game;
 
 public interface Command {
-	void execute(CommandContext commandContext);
-	String character();
+	void execute(String character, CommandContext commandContext);
 }

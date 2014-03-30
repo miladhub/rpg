@@ -13,7 +13,7 @@ import java.net.UnknownHostException;
 public class ClientStub {
 	private Socket clientSocket;
 	public void connectToServer() throws UnknownHostException, IOException {
-		clientSocket = new Socket("localhost", 6789);
+		clientSocket = new Socket("localhost", 6799);
 	}
 	public void close() throws IOException {
 		if (clientSocket != null && !clientSocket.isClosed())

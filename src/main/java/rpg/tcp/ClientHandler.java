@@ -62,7 +62,8 @@ public class ClientHandler implements Callable<String> {
 			String command;
 			while ((command = reader.readLine()) != null) {
 				try {
-					game.execute(commands.createCommand(command));
+					CharacterCommand charCommand = commands.createCharacterCommand(command);
+					game.execute(charCommand.character, charCommand.command);
 				} catch (UnknownCommandException e) {
 					writer.println("What does that mean?");
 				} catch (NotInGameException e) {

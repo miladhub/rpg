@@ -40,32 +40,32 @@ public class MovementsTest {
 	@Test
 	public void moveForward() {
 		charLocations.setLocalPosition("jim", 0, 0);
-		game.execute(new Move("jim", Direction.Forward));
-		game.execute(new TellPosition("jim"));
+		game.execute("jim", new Move(Direction.Forward));
+		game.execute("jim", new TellPosition());
 		verify(jimOut, times(2)).isAt(new LocalPosition(0, 1), new LocalMap(5, 5));
 	}
 	
 	@Test
 	public void moveBackward() {
 		charLocations.setLocalPosition("jim", 0, 1);
-		game.execute(new Move("jim", Direction.Backward));
-		game.execute(new TellPosition("jim"));
+		game.execute("jim", new Move(Direction.Backward));
+		game.execute("jim", new TellPosition());
 		verify(jimOut, times(2)).isAt(new LocalPosition(0, 0), new LocalMap(5, 5));
 	}
 	
 	@Test
 	public void moveLeft() {
 		charLocations.setLocalPosition("jim", 1, 0);
-		game.execute(new Move("jim", Direction.Left));
-		game.execute(new TellPosition("jim"));
+		game.execute("jim", new Move(Direction.Left));
+		game.execute("jim", new TellPosition());
 		verify(jimOut, times(2)).isAt(new LocalPosition(0, 0), new LocalMap(5, 5));
 	}
 	
 	@Test
 	public void moveRight() {
 		charLocations.setLocalPosition("jim", 0, 0);
-		game.execute(new Move("jim", Direction.Right));
-		game.execute(new TellPosition("jim"));
+		game.execute("jim", new Move(Direction.Right));
+		game.execute("jim", new TellPosition());
 		verify(jimOut, times(2)).isAt(new LocalPosition(1, 0), new LocalMap(5, 5));
 	}
 }

@@ -44,9 +44,9 @@ public class Game implements CommandExecutor, GameContext {
 	}
 	
 	@Override
-	public void execute(Command command) {
-		if (!actionContext.characterIsBusy(command.character())) {
-			command.execute(actionContext);
+	public void execute(String character, Command command) {
+		if (!actionContext.characterIsBusy(character)) {
+			command.execute(character, actionContext);
 		}
 	}
 	

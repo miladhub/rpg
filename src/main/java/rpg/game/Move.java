@@ -1,21 +1,14 @@
 package rpg.game;
 
 public class Move implements Command {
-	private final String character;
 	private final Direction dir;
 
-	public Move(String character, Direction dir) {
-		this.character = character;
+	public Move(Direction dir) {
 		this.dir = dir;
 	}
 
 	@Override
-	public void execute(CommandContext context) {
+	public void execute(String character, CommandContext context) {
 		context.characterLocations().move(character, dir);		
-	}
-
-	@Override
-	public String character() {
-		return character;
 	}
 }

@@ -24,52 +24,48 @@ public class Commands {
 		this.out = out;
 	}
 
-	public Command createCommand(String command) throws UnknownCommandException {
-		if (command.startsWith("enter as ")) {
-			character = command.substring("enter as ".length());
-			return new EnterGame(character, out);
-		}
-		if ("quit".equals(command)) {
-			return new QuitGame(character);
-		}
-		if (command.startsWith("say ")) {
-			return new Say(character, command.substring("say ".length()));
-		}
-		if (command.startsWith("go to ")) {
-			return new Travel(character, command.substring("go to ".length()));
-		}
-		if (command.contains("where")) {
-			return new TellWhereabout(character);
-		}
-		if (command.contains("near")) {
-			return new TellWhatsNear(character);
-		}
-		if (command.contains("move")) {
-			return new Move(character, parseDirection(command));
-		}
-		if (command.contains("position")) {
-			return new TellPosition(character);
-		}
-		if (command.contains("look")) {
-			return new LookAround(character);
-		}
-		if (command.contains("sleep")) {
-			return buildSleep();
-		}
-		throw new UnknownCommandException(command);
+	public CharacterCommand createCharacterCommand(String command) throws UnknownCommandException {
+		return new CharacterCommand(parseCommandAndCharacter(command), character);
 	}
 
-	private Command buildSleep() {
-		return new Command() {
-			@Override
-			public void execute(CommandContext commandContext) {
-				commandContext.addScript(Scripts.aScript(new Sleep(character)).lasting(5));
-			}
-			@Override
-			public String character() {
-				return character;
-			}
-		};
+	private Command parseCommandAndCharacter(String command) throws UnknownCommandException {
+		if (command.startsWith("enter")) {
+			character = command.substring("enter as ".length());
+			return new EnterGame(out);
+		}
+		if ("quit".equals(command)) {
+			return new QuitGame();
+		}
+		if (command.startsWith("say ")) {
+			return new Say(command.substring("say ".length()));
+		}
+		if (command.startsWith("go to ")) {
+			return new Travel(command.substring("go to ".length()));
+		}
+		if (command.contains("where")) {
+			return new TellWhereabout();
+		}
+		if (command.contains("near")) {
+			return new TellWhatsNear();
+		}
+		if (command.contains("move")) {
+			return new Move(parseDirection(command));
+		}
+		if (command.contains("position")) {
+			return new TellPosition();
+		}
+		if (command.contains("look")) {
+			return new LookAround();
+		}
+		if (command.contains("sleep")) {
+			return new Command() {
+				@Override
+				public void execute(String character, CommandContext commandContext) {
+					commandContext.addScript(Scripts.aScript(new Sleep(character)).lasting(5));
+				}
+			};
+		}
+		throw new UnknownCommandException(command);
 	}
 
 	private Direction parseDirection(String command) {
