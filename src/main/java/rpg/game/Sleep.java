@@ -1,6 +1,5 @@
 package rpg.game;
 
-
 public class Sleep extends BaseScript {
 	private String character;
 
@@ -11,11 +10,6 @@ public class Sleep extends BaseScript {
 	@Override
 	public void onStart(ScriptContext context) {
 		context.keepBusy(character, this);
-	}
-	
-	@Override
-	public void onStop(ScriptContext context) {
-		System.out.println("stopping sleep");
 	}
 
 	@Override
