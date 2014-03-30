@@ -1,6 +1,7 @@
 package rpg.tcp;
 
 import rpg.game.Command;
+import rpg.game.CommandContext;
 import rpg.game.Direction;
 import rpg.game.LookAround;
 import rpg.game.Move;
@@ -8,6 +9,8 @@ import rpg.game.OutputPort;
 import rpg.game.QuitGame;
 import rpg.game.Say;
 import rpg.game.EnterGame;
+import rpg.game.Scripts;
+import rpg.game.Sleep;
 import rpg.game.TellPosition;
 import rpg.game.TellWhatsNear;
 import rpg.game.TellWhereabout;
@@ -50,7 +53,23 @@ public class Commands {
 		if (command.contains("look")) {
 			return new LookAround(character);
 		}
+		if (command.contains("sleep")) {
+			return buildSleep();
+		}
 		throw new UnknownCommandException(command);
+	}
+
+	private Command buildSleep() {
+		return new Command() {
+			@Override
+			public void execute(CommandContext commandContext) {
+				commandContext.addScript(Scripts.aScript(new Sleep(character)).lasting(5));
+			}
+			@Override
+			public String character() {
+				return character;
+			}
+		};
 	}
 
 	private Direction parseDirection(String command) {

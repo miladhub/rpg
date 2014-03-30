@@ -62,10 +62,6 @@ public class Game implements CommandExecutor, GameContext {
 		actionContext.tick();
 	}
 
-	public void startScripts() {
-		actionContext.startScripts();
-	}
-
 	public void stopScripts() {
 		actionContext.stopScripts();
 	}

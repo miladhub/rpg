@@ -49,7 +49,6 @@ public class Main {
 	}
 
 	private void start() {
-		game.startScripts();
 		clock.start();
 		server.listen(6789);
 	}

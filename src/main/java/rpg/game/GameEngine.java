@@ -96,6 +96,7 @@ public class GameEngine implements ScriptContext, ScriptRunner {
 			durations.put(spec.script(), spec.durationInSeconds());
 		}
 		executionCounters.put(spec.script(), 0);
+		spec.script().onStart(this);
 	}
 
 	@Override
@@ -105,13 +106,6 @@ public class GameEngine implements ScriptContext, ScriptRunner {
 				script.onTick(this);
 			}
 			checkIfScriptHasFinished(script);
-		}
-	}
-
-	@Override
-	public void startScripts() {
-		for (Script script : runningScripts) {
-			script.onStart(this);
 		}
 	}
 
@@ -139,6 +133,12 @@ public class GameEngine implements ScriptContext, ScriptRunner {
 				durations.remove(script);
 				runningScripts.remove(script);
 				scriptSpecs.remove(script);
+				for (String character : blockingScripts.keySet()) {
+					if (blockingScripts.get(character) == script) {
+						blockingScripts.remove(character);
+					}
+				}
+				script.onStop(this);
 			}
 		}
 	}

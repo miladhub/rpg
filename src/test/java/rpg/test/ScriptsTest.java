@@ -3,15 +3,18 @@ package rpg.test;
 import static org.mockito.Mockito.*;
 import static rpg.game.Scripts.*;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import rpg.game.BaseScript;
 import rpg.game.CharacterLocations;
 import rpg.game.Game;
 import rpg.game.OutputPort;
 import rpg.game.Say;
-import rpg.game.Script;
 import rpg.game.ScriptContext;
+import rpg.game.Scripts;
+import rpg.game.Sleep;
 import rpg.game.WorldMap;
 
 public class ScriptsTest {
@@ -32,6 +35,11 @@ public class ScriptsTest {
 	public void createCharacters() {
 		game.addCharacter("jim", jim);
 		game.addCharacter("john", john);
+	}
+	
+	@After
+	public void stopScripts() {
+		game.stopScripts();
 	}
 	
 	@Test
@@ -74,9 +82,7 @@ public class ScriptsTest {
 		game.addScript(new Sleep("jim"));		
 		game.addScript(new Walk("jim"));
 		
-		game.startScripts();
 		game.tick();
-		game.stopScripts();
 		
 		verify(jim).heardFromGame("zzz...");
 		verify(jim, never()).heardFromGame("walking");
@@ -87,9 +93,7 @@ public class ScriptsTest {
 		game.addScript(new Sleep("jim"));		
 		game.addScript(new Poison("jim"));
 		
-		game.startScripts();
 		game.tick();
-		game.stopScripts();
 		
 		verify(jim).heardFromGame("zzz...");
 		verify(jim).heardFromGame("you feel weaker!");
@@ -100,10 +104,8 @@ public class ScriptsTest {
 		game.addScript(new Sleep("jim"));		
 		game.addScript(new Fight("jim"));
 		
-		game.startScripts();
 		game.tick();
 		game.tick();
-		game.stopScripts();
 		
 		verify(jim).heardFromGame("zzz...");
 		verify(jim, times(2)).heardFromGame("slash!");
@@ -113,14 +115,12 @@ public class ScriptsTest {
 	public void fightInterruptsSleepThatWasSupposedToLastTenSeconds() {
 		game.addScript(aScript(new Sleep("jim")).lasting(10));
 		
-		game.startScripts();
 		game.tick();
 		game.tick();
 		game.addScript(new Fight("jim"));
 		game.tick();
 		game.tick();
 		game.tick();
-		game.stopScripts();
 		
 		verify(jim, atMost(3)).heardFromGame("zzz...");
 		verify(jim, times(3)).heardFromGame("slash!");
@@ -130,14 +130,12 @@ public class ScriptsTest {
 	public void poisonActsWhileSleepingAndLastTwoSeconds() {
 		game.addScript(aScript(new Sleep("jim")).lasting(10));		
 		
-		game.startScripts();
 		game.tick();
 		game.tick();
 		game.addScript(aScript(new Poison("jim")).lasting(2));
 		game.tick();
 		game.tick();
 		game.tick();
-		game.stopScripts();
 		
 		verify(jim, times(5)).heardFromGame("zzz...");
 		verify(jim, times(2)).heardFromGame("you feel weaker!");
@@ -146,7 +144,6 @@ public class ScriptsTest {
 	@Test
 	public void cannotTalkWhileSleeping() {
 		game.addScript(new Sleep("jim"));
-		game.startScripts();
 		
 		charLocations.setCharacterAtLocation("jim", "County of the Mage", "an open field");
 		charLocations.setCharacterAtLocation("john", "County of the Mage", "an open field");
@@ -156,12 +153,20 @@ public class ScriptsTest {
 		verify(john, never()).heardFrom(eq("jim"), anyString());
 	}
 	
-	private static abstract class BaseScript implements Script {
-		@Override
-		public void onStart(ScriptContext context) {}
-
-		@Override
-		public void onStop(ScriptContext context) {}
+	@Test
+	public void characterCanTalkAfterSleep() {
+		game.addScript(Scripts.aScript(new Sleep("jim")).lasting(2));
+		
+		game.tick();
+		game.tick();
+		game.tick();
+		
+		charLocations.setCharacterAtLocation("jim", "County of the Mage", "an open field");
+		charLocations.setCharacterAtLocation("john", "County of the Mage", "an open field");
+		
+		game.execute(new Say("jim", "hello"));
+		
+		verify(john).heardFrom("jim", "hello");
 	}
 	
 	private static class Fight extends BaseScript {
@@ -213,24 +218,6 @@ public class ScriptsTest {
 				context.outputPort(character).heardFromGame(
 						"Game server is watching you.");
 			}
-		}
-	}
-
-	private static class Sleep extends BaseScript {
-		private String character;
-
-		public Sleep(String character) {
-			this.character = character;
-		}
-
-		@Override
-		public void onStart(ScriptContext context) {
-			context.keepBusy(character, this);
-		}
-		
-		@Override
-		public void onTick(ScriptContext context) {
-			context.outputPort(character).heardFromGame("zzz...");
 		}
 	}
 }
