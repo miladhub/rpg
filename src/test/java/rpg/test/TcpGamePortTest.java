@@ -75,6 +75,29 @@ public class TcpGamePortTest {
 	}
 	
 	@Test
+	public void mustEnterGameToKnowLocation() throws IOException {
+		clientOne.connectToServer();
+		clientOne.send("where");
+		clientOne.received("Enter the game first.");
+	}
+
+	@Test
+	public void afterEnteringGameCanKnowLocation() throws IOException {
+		clientOne.connectToServer();
+		clientOne.send("enter as jim");
+		clientOne.send("where");
+		clientOne.received("Welcome to Testland, jim!");
+		clientOne.received("You're in an open field, County of the Mage.");
+	}
+	
+	@Test
+	public void unknownCommandsAreReported() throws IOException {
+		clientOne.connectToServer();
+		clientOne.send("foo and bar");
+		clientOne.received("What does that mean?");
+	}
+	
+	@Test
 	public void jimSpeaksToJohn() throws IOException {
 		clientOne.connectToServer();
 		clientTwo.connectToServer();
