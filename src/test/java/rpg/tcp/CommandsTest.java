@@ -22,7 +22,7 @@ import rpg.game.Travel;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CommandsTest {
-	private @Mock OutputPort out = mock(OutputPort.class);
+	private @Mock OutputPort out;
 	private @Mock CharacterLocations locs;
 	private @Mock GameContext game;
 	private Commands commands = new Commands(out);
