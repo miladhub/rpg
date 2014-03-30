@@ -36,10 +36,10 @@ public class Commands {
 		if ("quit".equals(command)) {
 			return new QuitGame();
 		}
-		if (command.startsWith("say ")) {
+		if (command.startsWith("say")) {
 			return new Say(command.substring("say ".length()));
 		}
-		if (command.startsWith("go to ")) {
+		if (command.startsWith("go")) {
 			return new Travel(command.substring("go to ".length()));
 		}
 		if (command.contains("where")) {
