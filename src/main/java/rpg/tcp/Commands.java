@@ -49,7 +49,7 @@ public class Commands {
 			return new TellWhatsNear();
 		}
 		if (command.contains("move")) {
-			return new Move(parseDirection(command));
+			return new Move(Direction.valueOf(command.substring(command.indexOf("move") + "move".length()).trim()));
 		}
 		if (command.contains("position")) {
 			return new TellPosition();
@@ -66,9 +66,5 @@ public class Commands {
 			};
 		}
 		throw new UnknownCommandException(command);
-	}
-
-	private Direction parseDirection(String command) {
-		return Direction.valueOf(command.substring(command.indexOf("move") + "move".length()).trim());
 	}
 }
