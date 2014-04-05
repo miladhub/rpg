@@ -1,10 +1,13 @@
 package rpg.test;
 
-import static org.mockito.Mockito.*;
 import static rpg.game.Scripts.*;
 
+import org.jmock.Expectations;
+import org.jmock.auto.Mock;
+import org.jmock.integration.junit4.JUnitRuleMockery;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 import rpg.game.BaseScript;
@@ -16,20 +19,17 @@ import rpg.game.ScriptContext;
 import rpg.game.Scripts;
 import rpg.game.Sleep;
 import rpg.game.WorldMap;
+import rpg.test.support.Tests;
 
 public class ScriptsTest {
-	private final WorldMap map = new WorldMap.WorldMapBuilder()
-		.addRegion("County of the Mage")
-		.addPlace("an open field").size("5x5")
-		.addPlace("a field next to the previous one")
-		.addPlace("the Mage border")
-		.addRegion("the County of the Warrior")
-		.addPlace("the Warrior border")
-		.createMap();
+	@Rule public final JUnitRuleMockery context = new JUnitRuleMockery();
+	
+	private final WorldMap map = Tests.testMap().createMap();
 	private final CharacterLocations charLocations = new CharacterLocations(map);
 	private final Game game = new Game("Testlandia", charLocations);
-	private final OutputPort jim = mock(OutputPort.class);
-	private final OutputPort john = mock(OutputPort.class);
+	
+	private @Mock OutputPort jim;
+	private @Mock OutputPort john;
 	
 	@Before
 	public void createCharacters() {
@@ -44,129 +44,141 @@ public class ScriptsTest {
 	
 	@Test
 	public void scriptSpeaksToCharactersEveryTick() {
+		context.checking(new Expectations() {{
+			oneOf(jim).heardFromGame("Game server is watching you.");
+			oneOf(john).heardFromGame("Game server is watching you.");
+		}});
+		
 		game.addScript(new BigBrother());
-		
 		game.tick();
-		
-		verify(jim).heardFromGame("Game server is watching you.");
-		verify(john).heardFromGame("Game server is watching you.");
 	}
 	
 	@Test
 	public void jimSleepsForTwoSeconds() {
+		context.checking(new Expectations() {{
+			exactly(2).of(jim).heardFromGame("zzz...");
+		}});
+		
 		game.addScript(aScript(new Sleep("jim")).lasting(2));
-		
 		game.tick();
 		game.tick();
 		game.tick();
-		
-		verify(jim, times(2)).heardFromGame("zzz...");
 	}
 	
 	@Test
 	public void poisonActsEveryThreeSeconds() {
+		context.checking(new Expectations() {{
+			exactly(2).of(jim).heardFromGame("you feel weaker!");
+		}});
+		
 		game.addScript(aScript(new Poison("jim")).lasting(10).tickingEvery(3));
-		
 		game.tick();
 		game.tick();
 		game.tick();
 		game.tick();
 		game.tick();
 		game.tick();
-		
-		verify(jim, times(2)).heardFromGame("you feel weaker!");
 	}
 	
 	@Test
 	public void sleepingKeepsCharacterBusy() {
+		context.checking(new Expectations() {{
+			oneOf(jim).heardFromGame("zzz...");
+			never(jim).heardFromGame("walking");
+		}});
+		
 		game.addScript(new Sleep("jim"));		
 		game.addScript(new Walk("jim"));
-		
 		game.tick();
-		
-		verify(jim).heardFromGame("zzz...");
-		verify(jim, never()).heardFromGame("walking");
 	}
 	
 	@Test
 	public void poisonCreepsWhileSleeping() {
+		context.checking(new Expectations() {{
+			oneOf(jim).heardFromGame("zzz...");
+			oneOf(jim).heardFromGame("you feel weaker!");
+		}});
+
 		game.addScript(new Sleep("jim"));		
 		game.addScript(new Poison("jim"));
-		
 		game.tick();
-		
-		verify(jim).heardFromGame("zzz...");
-		verify(jim).heardFromGame("you feel weaker!");
 	}
 
 	@Test
 	public void fightInterruptsSleep() {
+		context.checking(new Expectations() {{
+			oneOf(jim).heardFromGame("zzz...");
+			exactly(2).of(jim).heardFromGame("slash!");
+		}});
+
 		game.addScript(new Sleep("jim"));		
 		game.addScript(new Fight("jim"));
-		
 		game.tick();
 		game.tick();
-		
-		verify(jim).heardFromGame("zzz...");
-		verify(jim, times(2)).heardFromGame("slash!");
 	}
 	
 	@Test
 	public void fightInterruptsSleepThatWasSupposedToLastTenSeconds() {
+		context.checking(new Expectations() {{
+			atMost(3).of(jim).heardFromGame("zzz...");
+			exactly(3).of(jim).heardFromGame("slash!");
+		}});
+
 		game.addScript(aScript(new Sleep("jim")).lasting(10));
-		
 		game.tick();
 		game.tick();
 		game.addScript(new Fight("jim"));
 		game.tick();
 		game.tick();
 		game.tick();
-		
-		verify(jim, atMost(3)).heardFromGame("zzz...");
-		verify(jim, times(3)).heardFromGame("slash!");
 	}
 	
 	@Test
 	public void poisonActsWhileSleepingAndLastTwoSeconds() {
+		context.checking(new Expectations() {{
+			exactly(5).of(jim).heardFromGame("zzz...");
+			exactly(2).of(jim).heardFromGame("you feel weaker!");
+		}});
+
 		game.addScript(aScript(new Sleep("jim")).lasting(10));		
-		
 		game.tick();
 		game.tick();
 		game.addScript(aScript(new Poison("jim")).lasting(2));
 		game.tick();
 		game.tick();
 		game.tick();
-		
-		verify(jim, times(5)).heardFromGame("zzz...");
-		verify(jim, times(2)).heardFromGame("you feel weaker!");
 	}
 	
 	@Test
 	public void cannotTalkWhileSleeping() {
-		game.addScript(new Sleep("jim"));
+		context.checking(new Expectations() {{
+			never(jim).heardFrom(with(equal("jim")), with(any(String.class)));
+		}});
 		
 		charLocations.setCharacterAtLocation("jim", "County of the Mage", "an open field");
 		charLocations.setCharacterAtLocation("john", "County of the Mage", "an open field");
 		
+		game.addScript(new Sleep("jim"));
 		game.execute("jim", new Say("hello"));
-		
-		verify(john, never()).heardFrom(eq("jim"), anyString());
 	}
 	
 	@Test
 	public void characterCanTalkAfterSleep() {
-		game.addScript(Scripts.aScript(new Sleep("jim")).lasting(2));
 		
-		game.tick();
-		game.tick();
-		game.tick();
-		
+		context.checking(new Expectations() {{
+			allowing(jim).heardFromGame("zzz...");
+			
+			oneOf(john).heardFrom("jim", "hello");
+		}});
+
 		charLocations.setCharacterAtLocation("jim", "County of the Mage", "an open field");
 		charLocations.setCharacterAtLocation("john", "County of the Mage", "an open field");
 		
+		game.addScript(Scripts.aScript(new Sleep("jim")).lasting(2));
+		game.tick();
+		game.tick();
+		game.tick();
 		game.execute("jim", new Say("hello"));
-		
-		verify(john).heardFrom("jim", "hello");
 	}
 	
 	private static class Fight extends BaseScript {

@@ -7,16 +7,10 @@ import org.junit.Test;
 import rpg.game.CharacterLocations;
 import rpg.game.CharacterReader;
 import rpg.game.WorldMap;
+import rpg.test.support.Tests;
 
 public class CharacterReaderTest {
-	private final WorldMap map = new WorldMap.WorldMapBuilder()
-		.addRegion("County of the Mage")
-		.addPlace("an open field").size("5x5")
-		.addPlace("a field next to the previous one")
-		.addPlace("the Mage border")
-		.addRegion("the County of the Warrior")
-		.addPlace("the Warrior border")
-		.createMap();
+	private final WorldMap map = Tests.testMap().createMap();
 
 	@Test
 	public void readCharactersLocations() throws Exception {

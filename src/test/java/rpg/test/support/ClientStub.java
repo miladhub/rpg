@@ -1,4 +1,4 @@
-package rpg.test;
+package rpg.test.support;
 
 import static org.junit.Assert.*;
 

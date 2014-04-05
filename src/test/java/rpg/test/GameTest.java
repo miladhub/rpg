@@ -1,8 +1,11 @@
 package rpg.test;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 
+import org.jmock.Expectations;
+import org.jmock.auto.Mock;
+import org.jmock.integration.junit4.JUnitRuleMockery;
+import org.junit.Rule;
 import org.junit.Test;
 
 import rpg.game.Game;
@@ -18,26 +21,19 @@ import rpg.game.TellWhereabout;
 import rpg.game.Travel;
 import rpg.game.WorldMap;
 import rpg.game.CharacterLocations;
+import rpg.test.support.Tests;
 
 public class GameTest {
-	private final WorldMap map = new WorldMap.WorldMapBuilder()
-			.addRegion("County of the Mage")
-			.addPlace("an open field").size("5x5")
-			.addPlace("a field next to the previous one")
-			.addPlace("the Mage border")
-			.addRegion("the County of the Warrior")
-			.addPlace("the Warrior border")
-			.createMap();
+	@Rule public final JUnitRuleMockery context = new JUnitRuleMockery();
 	
+	private final WorldMap map = Tests.testMap().createMap();
 	private final CharacterLocations charLocations = new CharacterLocations(map);
-	
 	private final Game game = new Game("Testlandia", charLocations);
 	
-	private final OutputPort jimOut = mock(OutputPort.class);
-	private final OutputPort johnOut = mock(OutputPort.class);
+	private @Mock OutputPort jim, john;
 
 	private void joinJim() {
-		game.addCharacter("jim", jimOut);
+		game.addCharacter("jim", jim);
 	}
 	
 	@Test
@@ -47,7 +43,7 @@ public class GameTest {
 	
 	@Test
 	public void enteringGameGreetsPlayer() {
-		game.addCharacter("jim", jimOut);
+		game.addCharacter("jim", jim);
 	}
 	
 	@Test(expected = NotInGameException.class)
@@ -57,30 +53,39 @@ public class GameTest {
 	
 	@Test
 	public void jimSpeaksToJohn() {
-		game.addCharacter("jim", jimOut);
-		game.addCharacter("john", johnOut);
+		game.addCharacter("jim", jim);
+		game.addCharacter("john", john);
 		
 		charLocations.setCharacterAtLocation("jim", "County of the Mage", "an open field");
 		charLocations.setCharacterAtLocation("john", "County of the Mage", "an open field");
 		
+		context.checking(new Expectations() {{
+			oneOf(john).heardFrom("jim", "hi");
+			never(jim).heardFrom(with(same("jim")), with(any(String.class)));
+		}});
+
 		game.execute("jim", new Say("hi"));
-		verify(johnOut).heardFrom("jim", "hi");
-		verify(jimOut, never()).heardFrom(same("jim"), anyString());
 	}
 	
 	@Test
 	public void jimSpeaksToKenWhosTooFar() {
-		game.addCharacter("jim", jimOut);
-		game.addCharacter("john", johnOut);
-		OutputPort kenOut = mock(OutputPort.class);
-		game.addCharacter("ken", kenOut);
+		game.addCharacter("jim", jim);
+		game.addCharacter("john", john);
+		final OutputPort ken = context.mock(OutputPort.class);
+		game.addCharacter("ken", ken);
 		
 		charLocations.setCharacterAtLocation("jim", "County of the Mage", "an open field");
 		charLocations.setCharacterAtLocation("john", "County of the Mage", "an open field");
 		charLocations.setCharacterAtLocation("ken", "the County of the Warrior", "the Warrior border");
 		
+		context.checking(new Expectations() {{
+			allowing(jim);
+			allowing(john);
+			
+			never(ken).heardFrom(with(equal("jim")), with(any(String.class)));
+		}});
+		
 		game.execute("jim", new Say("hi"));
-		verify(kenOut, never()).heardFrom(same("jim"), anyString());
 	}
 	
 	
@@ -88,34 +93,43 @@ public class GameTest {
 	public void jimAsksForHisWhereabout() {
 		joinJim();
 		charLocations.setCharacterAtLocation("jim", "County of the Mage", "an open field");
+
+		context.checking(new Expectations() {{
+			oneOf(jim).heardFromGame("You're in an open field, County of the Mage.");
+		}});
+		
 		game.execute("jim", new TellWhereabout());
-		verify(jimOut).heardFromGame("You're in an open field, County of the Mage.");
 	}
 	
 	@Test
 	public void jimSeesJohnApproaching() {
-		game.addCharacter("jim", jimOut);
-		game.addCharacter("john", johnOut);
+		game.addCharacter("jim", jim);
+		game.addCharacter("john", john);
 		
 		charLocations.setCharacterAtLocation("jim", "County of the Mage", "an open field");
 		charLocations.setCharacterAtLocation("john", "County of the Mage", "a field next to the previous one");
 		charLocations.setLocalPosition("jim", 0, 0);
 		charLocations.setLocalPosition("john", 0, 0);
 		
+		context.checking(new Expectations() {{
+			oneOf(jim).sees("john", new LocalPosition(0, 0), new LocalMap(5, 5));
+			oneOf(john).sees("jim", new LocalPosition(0, 0), new LocalMap(5, 5));
+		}});
+		
 		game.execute("john", new Travel("an open field"));
-		verify(jimOut).sees("john", new LocalPosition(0, 0), new LocalMap(5, 5));
-		verify(johnOut).sees("jim", new LocalPosition(0, 0), new LocalMap(5, 5));
 	}
 	
 	@Test
 	public void jimDiscoversAdjacentField() {
 		joinJim();
 		charLocations.setCharacterAtLocation("jim", "County of the Mage", "an open field");
-
-		game.execute("jim", new TellWhatsNear());
 		
-		verify(jimOut).heardFromGame("You can go to:");
-		verify(jimOut).heardFromGame("\ta field next to the previous one");
+		context.checking(new Expectations() {{
+			oneOf(jim).heardFromGame("You can go to:");
+			oneOf(jim).heardFromGame("\ta field next to the previous one");
+		}});
+		
+		game.execute("jim", new TellWhatsNear());
 	}
 	
 	@Test
@@ -123,9 +137,11 @@ public class GameTest {
 		joinJim();
 		charLocations.setCharacterAtLocation("jim", "County of the Mage", "the Mage border");
 		
-		game.execute("jim", new Travel("the Warrior border"));
+		context.checking(new Expectations() {{
+			oneOf(jim).heardFromGame("You have crossed into the County of the Warrior.");
+		}});
 		
-		verify(jimOut).heardFromGame("You have crossed into the County of the Warrior.");
+		game.execute("jim", new Travel("the Warrior border"));
 	}
 	
 	@Test
@@ -133,9 +149,11 @@ public class GameTest {
 		joinJim();
 		charLocations.setCharacterAtLocation("jim", "County of the Mage", "an open field");
 		
-		game.execute("jim", new Travel("a field next to the previous one"));
+		context.checking(new Expectations() {{
+			never(jim).heardFromGame("You have crossed into County of the Mage.");
+		}});
 		
-		verify(jimOut, never()).heardFromGame("You have crossed into County of the Mage.");
+		game.execute("jim", new Travel("a field next to the previous one"));
 	}
 	
 	@Test
@@ -143,8 +161,11 @@ public class GameTest {
 		joinJim();
 		charLocations.setCharacterAtLocation("jim", "County of the Mage", "an open field");
 		
+		context.checking(new Expectations() {{
+			oneOf(jim).heardFromGame("You can't travel to the Mage border from your current location.");
+		}});
+		
 		game.execute("jim", new Travel("the Mage border"));
-		verify(jimOut).heardFromGame("You can't travel to the Mage border from your current location.");
 	}
 	
 	@Test
@@ -154,15 +175,17 @@ public class GameTest {
 		charLocations.setCharacterAtLocation("jim", "County of the Mage", "an open field");
 		charLocations.setLocalPosition("jim", 0, 0);
 		
+		context.checking(new Expectations() {{
+			oneOf(jim).isAt(new LocalPosition(0, 0), new LocalMap(5, 5));
+		}});
+		
 		game.execute("jim", new TellPosition());
-
-		verify(jimOut).isAt(new LocalPosition(0, 0), new LocalMap(5, 5));
 	}
 	
 	@Test
 	public void jimAndJohnSeeEachOtherInTheLocalMap() {
-		game.addCharacter("jim", jimOut);
-		game.addCharacter("john", johnOut);
+		game.addCharacter("jim", jim);
+		game.addCharacter("john", john);
 		
 		charLocations.setCharacterAtLocation("jim", "County of the Mage", "an open field");
 		charLocations.setLocalPosition("jim", 0, 0);
@@ -170,10 +193,12 @@ public class GameTest {
 		charLocations.setCharacterAtLocation("john", "County of the Mage", "an open field");
 		charLocations.setLocalPosition("john", 2, 2);
 		
-		game.execute("jim", new LookAround());
-		verify(jimOut).sees("john", new LocalPosition(2, 2), new LocalMap(5, 5));
+		context.checking(new Expectations() {{
+			oneOf(jim).sees("john", new LocalPosition(2, 2), new LocalMap(5, 5));
+			oneOf(john).sees("jim", new LocalPosition(0, 0), new LocalMap(5, 5));
+		}});
 		
+		game.execute("jim", new LookAround());
 		game.execute("john", new LookAround());
-		verify(johnOut).sees("jim", new LocalPosition(0, 0), new LocalMap(5, 5));
 	}
 }
