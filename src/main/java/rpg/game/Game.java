@@ -6,7 +6,7 @@ import java.util.Set;
 
 public class Game implements CommandExecutor, GameContext {
 	private final String worldName;
-	private final Map<String, OutputPort> outs = new HashMap<>();
+	private final Map<String, CharacterHandle> outs = new HashMap<>();
 	private final GameEngine actionContext;
 
 	public Game(String worldName, CharacterLocations charLocations) {
@@ -21,8 +21,8 @@ public class Game implements CommandExecutor, GameContext {
 	}
 
 	@Override
-	public void addCharacter(String character, OutputPort out) {
-		outs.put(character, out);
+	public void addCharacter(String character, CharacterHandle handle) {
+		outs.put(character, handle);
 	}
 	
 	@Override
@@ -31,7 +31,7 @@ public class Game implements CommandExecutor, GameContext {
 	}
 	
 	@Override
-	public OutputPort outputPort(String character) {
+	public CharacterHandle character(String character) {
 		if (character == null) {
 			throw new NotInGameException();
 		}

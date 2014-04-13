@@ -27,8 +27,8 @@ public class GameEngine implements ScriptContext, ScriptRunner {
 	}
 
 	@Override
-	public void addCharacter(String character, OutputPort out) {
-		game.addCharacter(character, out);
+	public void addCharacter(String character, CharacterHandle handle) {
+		game.addCharacter(character, handle);
 	}
 
 	@Override
@@ -37,8 +37,8 @@ public class GameEngine implements ScriptContext, ScriptRunner {
 	}
 
 	@Override
-	public OutputPort outputPort(String character) {
-		return game.outputPort(character);
+	public CharacterHandle character(String character) {
+		return game.character(character);
 	}
 
 	@Override

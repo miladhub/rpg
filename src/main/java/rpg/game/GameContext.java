@@ -4,8 +4,8 @@ import java.util.Set;
 
 public interface GameContext {
 	String worldName();
-	void addCharacter(String character, OutputPort out);
+	void addCharacter(String character, CharacterHandle handle);
 	void removeCharacter(String character);
 	Set<String> characters();
-	OutputPort outputPort(String character);
+	CharacterHandle character(String character);
 }

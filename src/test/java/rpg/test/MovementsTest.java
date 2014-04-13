@@ -12,7 +12,7 @@ import rpg.game.Game;
 import rpg.game.LocalMap;
 import rpg.game.LocalPosition;
 import rpg.game.Move;
-import rpg.game.OutputPort;
+import rpg.game.CharacterHandle;
 import rpg.game.TellPosition;
 import rpg.game.WorldMap;
 import rpg.game.CharacterLocations;
@@ -25,7 +25,7 @@ public class MovementsTest {
 	private final CharacterLocations charLocations = new CharacterLocations(map);
 	private final Game game = new Game("Testlandia", charLocations);
 	
-	private @Mock OutputPort jimOut;
+	private @Mock CharacterHandle jimOut;
 
 	@Before
 	public void joinJim() {

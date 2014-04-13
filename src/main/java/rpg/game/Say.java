@@ -10,7 +10,7 @@ public class Say implements Command {
 	@Override
 	public void execute(String character, CommandContext context) {
 		for (String otherCharacter : context.nearbyCharacters(character)) {
-			context.outputPort(otherCharacter).heardFrom(character, what);
+			context.character(otherCharacter).heardFrom(character, what);
 		}
 	}
 }

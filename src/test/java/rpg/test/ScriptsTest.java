@@ -13,7 +13,7 @@ import org.junit.Test;
 import rpg.game.BaseScript;
 import rpg.game.CharacterLocations;
 import rpg.game.Game;
-import rpg.game.OutputPort;
+import rpg.game.CharacterHandle;
 import rpg.game.Say;
 import rpg.game.ScriptContext;
 import rpg.game.Scripts;
@@ -28,8 +28,8 @@ public class ScriptsTest {
 	private final CharacterLocations charLocations = new CharacterLocations(map);
 	private final Game game = new Game("Testlandia", charLocations);
 	
-	private @Mock OutputPort jim;
-	private @Mock OutputPort john;
+	private @Mock CharacterHandle jim;
+	private @Mock CharacterHandle john;
 	
 	@Before
 	public void createCharacters() {
@@ -191,7 +191,7 @@ public class ScriptsTest {
 		@Override
 		public void onTick(ScriptContext context) {
 			context.interrupt(character);
-			context.outputPort(character).heardFromGame("slash!");
+			context.character(character).heardFromGame("slash!");
 		}
 	}
 	
@@ -204,7 +204,7 @@ public class ScriptsTest {
 		
 		@Override
 		public void onTick(ScriptContext context) {
-			context.outputPort(character).heardFromGame("you feel weaker!");
+			context.character(character).heardFromGame("you feel weaker!");
 		}
 	}
 	
@@ -218,7 +218,7 @@ public class ScriptsTest {
 		@Override
 		public void onTick(ScriptContext context) {
 			if (!context.characterIsBusy(character)) {
-				context.outputPort(character).heardFromGame("walking");
+				context.character(character).heardFromGame("walking");
 			}
 		}
 	}
@@ -227,7 +227,7 @@ public class ScriptsTest {
 		@Override
 		public void onTick(ScriptContext context) {
 			for (String character : context.characters()) {
-				context.outputPort(character).heardFromGame(
+				context.character(character).heardFromGame(
 						"Game server is watching you.");
 			}
 		}

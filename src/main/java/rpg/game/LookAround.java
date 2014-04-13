@@ -8,7 +8,7 @@ public class LookAround implements Command {
 	
 	private void notifyNearbyCharacters(String character, CommandContext context) {
 		for (String otherCharacter : context.nearbyCharacters(character)) {
-			context.outputPort(character).sees(otherCharacter,
+			context.character(character).sees(otherCharacter,
 					context.characterLocations().localPosition(otherCharacter),
 					context.characterLocations().localMap(otherCharacter));
 		}

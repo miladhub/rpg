@@ -14,7 +14,7 @@ import rpg.game.LocalPosition;
 import rpg.game.LookAround;
 import rpg.game.NotInGameException;
 import rpg.game.Say;
-import rpg.game.OutputPort;
+import rpg.game.CharacterHandle;
 import rpg.game.TellPosition;
 import rpg.game.TellWhatsNear;
 import rpg.game.TellWhereabout;
@@ -30,7 +30,7 @@ public class GameTest {
 	private final CharacterLocations charLocations = new CharacterLocations(map);
 	private final Game game = new Game("Testlandia", charLocations);
 	
-	private @Mock OutputPort jim, john;
+	private @Mock CharacterHandle jim, john;
 
 	private void joinJim() {
 		game.addCharacter("jim", jim);
@@ -48,7 +48,7 @@ public class GameTest {
 	
 	@Test(expected = NotInGameException.class)
 	public void executingCommandWithoutCharacterEndsGame() {
-		game.outputPort(null);
+		game.character(null);
 	}
 	
 	@Test
@@ -71,7 +71,7 @@ public class GameTest {
 	public void jimSpeaksToKenWhosTooFar() {
 		game.addCharacter("jim", jim);
 		game.addCharacter("john", john);
-		final OutputPort ken = context.mock(OutputPort.class);
+		final CharacterHandle ken = context.mock(CharacterHandle.class);
 		game.addCharacter("ken", ken);
 		
 		charLocations.setCharacterAtLocation("jim", "County of the Mage", "an open field");

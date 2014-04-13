@@ -14,6 +14,6 @@ public class Sleep extends BaseScript {
 
 	@Override
 	public void onTick(ScriptContext context) {
-		context.outputPort(character).heardFromGame("zzz...");
+		context.character(character).heardFromGame("zzz...");
 	}
 }

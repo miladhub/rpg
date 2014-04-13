@@ -12,17 +12,17 @@ public class Travel implements Command {
 		try {
 			context.characterLocations().moveToPlace(character, where);
 		} catch (CannotGoThereException e) {
-			context.outputPort(character).heardFromGame("You can't travel to " + where + " from your current location.");
+			context.character(character).heardFromGame("You can't travel to " + where + " from your current location.");
 		}
 		notifyNearbyCharacters(character, context);
 	}
 
 	private void notifyNearbyCharacters(String character, CommandContext context) {
 		for (String otherCharacter : context.nearbyCharacters(character)) {
-			context.outputPort(otherCharacter).sees(character,
+			context.character(otherCharacter).sees(character,
 					context.characterLocations().localPosition(character),
 					context.characterLocations().localMap(character));
-			context.outputPort(character).sees(otherCharacter,
+			context.character(character).sees(otherCharacter,
 					context.characterLocations().localPosition(otherCharacter),
 					context.characterLocations().localMap(otherCharacter));
 		}

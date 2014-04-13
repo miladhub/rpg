@@ -12,14 +12,14 @@ import rpg.game.CommandExecutor;
 import rpg.game.LocalMap;
 import rpg.game.LocalPosition;
 import rpg.game.NotInGameException;
-import rpg.game.OutputPort;
+import rpg.game.CharacterHandle;
 
 public class ClientHandler implements Callable<String> {
 	private final Socket clientSocket;
 	private final CommandExecutor game;
 	private final BufferedReader reader;
 	private final PrintWriter writer;
-	private final OutputPort out;
+	private final CharacterHandle handle;
 
 	public ClientHandler(CommandExecutor game, final Socket clientSocket) throws IOException {
 		super();
@@ -27,7 +27,7 @@ public class ClientHandler implements Callable<String> {
 		this.clientSocket = clientSocket;
 		reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 		writer = new PrintWriter(new BufferedOutputStream(clientSocket.getOutputStream()), true);
-		out = new OutputPort() {
+		handle = new CharacterHandle() {
 			@Override
 			public void heardFromGame(String message) {
 				writer.println(message);
@@ -58,7 +58,7 @@ public class ClientHandler implements Callable<String> {
 	@Override
 	public String call() throws Exception {
 		try {
-			final Commands commands = new Commands(out);
+			final Commands commands = new Commands(handle);
 			String command;
 			while ((command = reader.readLine()) != null) {
 				try {

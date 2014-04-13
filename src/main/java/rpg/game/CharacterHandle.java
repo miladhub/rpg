@@ -1,6 +1,6 @@
 package rpg.game;
 
-public interface OutputPort {
+public interface CharacterHandle {
 	void heardFromGame(String message);
 	void heardFrom(String from, String what);
 	void sees(String whoOrWhat, LocalPosition where, LocalMap localMap);

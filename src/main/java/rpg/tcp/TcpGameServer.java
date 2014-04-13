@@ -10,28 +10,28 @@ import rpg.game.CommandExecutor;
 
 public class TcpGameServer {
 	private final ExecutorService pool = Executors.newFixedThreadPool(10);
-	private final ServerOutputPort out;
+	private final ServerOutputPort handle;
 	private CommandExecutor game;
 	private ServerSocket welcomeSocket;
 	private volatile boolean shutdown;
 	
-	public TcpGameServer(ServerOutputPort out, CommandExecutor game) {
+	public TcpGameServer(ServerOutputPort handle, CommandExecutor game) {
 		super();
-		this.out = out;
+		this.handle = handle;
 		this.game = game;
 	}
 
 	public void listen(int port) {
 		try {
 			welcomeSocket = new ServerSocket(port);
-			out.listening(port);
+			handle.listening(port);
 			while (!shutdown) {
 				Socket socket = welcomeSocket.accept();
 				pool.submit(new ClientHandler(game, socket));
-				out.clientConnected(socket.getInetAddress());
+				handle.clientConnected(socket.getInetAddress());
 			}
 		} catch (IOException e) {
-			out.cannotListen(e.getMessage());
+			handle.cannotListen(e.getMessage());
 		}
 	}
 
