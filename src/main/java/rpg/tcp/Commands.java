@@ -3,6 +3,7 @@ package rpg.tcp;
 import rpg.game.Command;
 import rpg.game.CommandContext;
 import rpg.game.Direction;
+import rpg.game.Fight;
 import rpg.game.LookAround;
 import rpg.game.Move;
 import rpg.game.CharacterHandle;
@@ -62,6 +63,16 @@ public class Commands {
 				@Override
 				public void execute(String character, CommandContext commandContext) {
 					commandContext.addScript(Scripts.aScript(new Sleep(character)).lasting(5));
+				}
+			};
+		}
+		if (command.contains("attack")) {
+			final String opponent = command.split(" ")[1];
+			handle.heardFromGame("You are attacking " + opponent);
+			return new Command() {
+				@Override
+				public void execute(String character, CommandContext commandContext) {
+					commandContext.addScript(Scripts.aScript(new Fight(opponent)).lasting(3));
 				}
 			};
 		}

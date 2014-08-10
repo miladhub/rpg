@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import rpg.game.BaseScript;
 import rpg.game.CharacterLocations;
+import rpg.game.Fight;
 import rpg.game.Game;
 import rpg.game.CharacterHandle;
 import rpg.game.Say;
@@ -179,20 +180,6 @@ public class ScriptsTest {
 		game.tick();
 		game.tick();
 		game.execute("jim", new Say("hello"));
-	}
-	
-	private static class Fight extends BaseScript {
-		private String character;
-
-		public Fight(String character) {
-			this.character = character;
-		}
-		
-		@Override
-		public void onTick(ScriptContext context) {
-			context.interrupt(character);
-			context.character(character).heardFromGame("slash!");
-		}
 	}
 	
 	private static class Poison extends BaseScript {
