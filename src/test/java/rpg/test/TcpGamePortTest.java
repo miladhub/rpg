@@ -2,12 +2,7 @@ package rpg.test;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import org.junit.After;
 import org.junit.Before;
@@ -28,46 +23,39 @@ public class TcpGamePortTest {
 	private final ClientStub clientOne = new ClientStub();
 	private final ClientStub clientTwo = new ClientStub();
 	private final ExecutorService executor = Executors.newSingleThreadExecutor();
-	private final CyclicBarrier synchPoint = new CyclicBarrier(2);
+    private final CountDownLatch synchPoint = new CountDownLatch(1);
 	private final TcpGameServer server = new TcpGameServer(new ServerOutputPort() {
 		@Override
 		public void listening(int port) {
-			try {
-				synchPoint.await();
-			} catch (InterruptedException | BrokenBarrierException e) {
-			}
-		}
+            synchPoint.countDown();
+        }
 		@Override
 		public void clientConnected(InetAddress inetAddress) {
 		}
 		@Override
 		public void cannotListen(String cause) {
-			synchPoint.reset();
+            throw new AssertionError(cause);
 		}
-	}, new Game("Testland", charLocations));
+	}, new Game("Test Land", charLocations));
 
 	@Before
-	public void connectToGame() throws IOException, InterruptedException, ExecutionException, BrokenBarrierException {
-		executor.submit(new Runnable() {
-			@Override
-			public void run() {
-				server.listen(6799);
-			}
-		});
-		try {
-			synchPoint.await();
-			charLocations.setCharacterAtLocation("jim", "County of the Mage", "an open field");
-			charLocations.setCharacterAtLocation("john", "County of the Mage", "an open field");
-		} catch (BrokenBarrierException e) {
-			throw new AssertionError("Connection failed", e);
-		}
-	}
+	public void connectToGame() throws IOException, InterruptedException, ExecutionException, BrokenBarrierException, TimeoutException {
+        charLocations.setCharacterAtLocation("jim", "County of the Mage", "an open field");
+        charLocations.setCharacterAtLocation("john", "County of the Mage", "an open field");
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                server.listen(6799);
+            }
+        });
+        synchPoint.await();
+    }
 
 	@Test
 	public void enterAsJim() throws IOException {
 		clientOne.connectToServer();
 		clientOne.send("enter as jim");
-		clientOne.received("Welcome to Testland, jim!");
+		clientOne.received("Welcome to Test Land, jim!");
 	}
 	
 	@Test
@@ -82,7 +70,7 @@ public class TcpGamePortTest {
 		clientOne.connectToServer();
 		clientOne.send("enter as jim");
 		clientOne.send("where");
-		clientOne.received("Welcome to Testland, jim!");
+		clientOne.received("Welcome to Test Land, jim!");
 		clientOne.received("You're in an open field, County of the Mage.");
 	}
 	

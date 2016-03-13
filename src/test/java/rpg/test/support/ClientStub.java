@@ -12,18 +12,23 @@ import java.net.UnknownHostException;
 
 public class ClientStub {
 	private Socket clientSocket;
-	public void connectToServer() throws UnknownHostException, IOException {
+	private PrintWriter out;
+	private BufferedReader in;
+	public void connectToServer() throws IOException {
 		clientSocket = new Socket("localhost", 6799);
+		clientSocket.setSoTimeout(5000);
+		out = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream()), true);
+		in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 	}
 	public void close() throws IOException {
 		if (clientSocket != null && !clientSocket.isClosed())
 			clientSocket.close();
 	}
 	public void send(String message) throws IOException {
-		new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream()), true).println(message);
+		out.println(message);
 	}
 	public String receive() throws IOException {
-		return new BufferedReader(new InputStreamReader(clientSocket.getInputStream())).readLine();
+		return in.readLine();
 	}
 	public void received(String message) throws IOException {
 		assertEquals(message, receive());
