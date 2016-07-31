@@ -1,37 +1,19 @@
 package rpg.tcp;
 
-import rpg.game.Command;
-import rpg.game.CommandContext;
-import rpg.game.Direction;
-import rpg.game.Fight;
-import rpg.game.LookAround;
-import rpg.game.Move;
-import rpg.game.CharacterHandle;
-import rpg.game.QuitGame;
-import rpg.game.Say;
-import rpg.game.EnterGame;
-import rpg.game.Scripts;
-import rpg.game.Sleep;
-import rpg.game.TellPosition;
-import rpg.game.TellWhatsNear;
-import rpg.game.TellWhereabout;
-import rpg.game.Travel;
+import rpg.game.*;
 
 public class Commands {
 	private final CharacterHandle handle;
-	private String character;
+	private final ClientState state;
 
-	public Commands(CharacterHandle handle) {
+	public Commands(CharacterHandle handle, ClientState state) {
 		this.handle = handle;
+		this.state = state;
 	}
 
-	public CharacterCommand createCharacterCommand(String command) throws UnknownCommandException {
-		return new CharacterCommand(parseCommandAndCharacter(command), character);
-	}
-
-	private Command parseCommandAndCharacter(String command) throws UnknownCommandException {
+	public Command parseCommand(String command) throws UnknownCommandException {
 		if (command.startsWith("enter")) {
-			character = command.substring("enter as ".length());
+			state.setCharacter(command.substring("enter as ".length()));
 			return new EnterGame(handle);
 		}
 		if ("quit".equals(command)) {

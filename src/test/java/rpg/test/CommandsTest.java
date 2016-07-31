@@ -6,22 +6,11 @@ import org.jmock.integration.junit4.JUnitRuleMockery;
 import org.junit.Rule;
 import org.junit.Test;
 
-import rpg.game.CharacterLocations;
-import rpg.game.Command;
-import rpg.game.EnterGame;
-import rpg.game.Game;
-import rpg.game.GameEngine;
-import rpg.game.LookAround;
-import rpg.game.QuitGame;
-import rpg.game.TellPosition;
-import rpg.game.TellWhatsNear;
-import rpg.game.Travel;
-import rpg.game.WorldMap;
-import rpg.tcp.CharacterCommand;
+import rpg.game.*;
 import rpg.tcp.Commands;
 import rpg.tcp.UnknownCommandException;
 
-public class CommandsTest {
+public class CommandsTest implements ClientState {
 	@Rule public final JUnitRuleMockery context = new JUnitRuleMockery();
 
 	private final WorldMap map = new WorldMap.WorldMapBuilder()
@@ -34,12 +23,13 @@ public class CommandsTest {
 		.createMap();
 	private final CharacterLocations charLocations = new CharacterLocations(map);
 	private final Game game = new Game("Testlandia", charLocations);
-	private final Commands commands = new Commands(null);
+	private final Commands commands = new Commands(null, this);
+	private String character;
 
 	@Test
 	public void createEnter() throws Exception {
-		CharacterCommand cmd = checkCommandClass("enter as jim", EnterGame.class);
-		assertEquals("jim", cmd.character);
+		checkCommandClass("enter as jim", EnterGame.class);
+		assertEquals("jim", character);
 	}
 
 	@Test
@@ -65,13 +55,23 @@ public class CommandsTest {
 	@Test
 	public void createTravel() throws Exception {
 		charLocations.setCharacterAtLocation("jim", "County of the Mage", "an open field");
-		CharacterCommand cmd = checkCommandClass("go to a field next to the previous one", Travel.class);
-		cmd.command.execute("jim", new GameEngine(game, charLocations));
+		Command cmd = checkCommandClass("go to a field next to the previous one", Travel.class);
+		cmd.execute("jim", new GameEngine(game, charLocations));
 	}
 
-	private CharacterCommand checkCommandClass(String commandString, Class<? extends Command> clazz) throws UnknownCommandException {
-		CharacterCommand cmd = commands.createCharacterCommand(commandString);
-		assertTrue(cmd.command.getClass() == clazz);
+	private Command checkCommandClass(String commandString, Class<? extends Command> clazz) throws UnknownCommandException {
+		Command cmd = commands.parseCommand(commandString);
+		assertTrue(cmd.getClass() == clazz);
 		return cmd;
+	}
+
+	@Override
+	public void setCharacter(String character) {
+		this.character = character;
+	}
+
+	@Override
+	public String character() {
+		return character;
 	}
 }

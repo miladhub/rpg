@@ -8,20 +8,17 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.concurrent.Callable;
 
-import rpg.game.CommandExecutor;
-import rpg.game.LocalMap;
-import rpg.game.LocalPosition;
-import rpg.game.NotInGameException;
-import rpg.game.CharacterHandle;
+import rpg.game.*;
 
-public class ClientHandler implements Callable<String> {
+public class ClientHandler implements Callable<String>, ClientState {
 	private final Socket clientSocket;
 	private final CommandExecutor game;
 	private final BufferedReader reader;
 	private final PrintWriter writer;
 	private final CharacterHandle handle;
+    private String character;
 
-	public ClientHandler(CommandExecutor game, final Socket clientSocket) throws IOException {
+    public ClientHandler(CommandExecutor game, final Socket clientSocket) throws IOException {
 		super();
 		this.game = game;
 		this.clientSocket = clientSocket;
@@ -58,12 +55,12 @@ public class ClientHandler implements Callable<String> {
 	@Override
 	public String call() throws Exception {
 		try {
-			final Commands commands = new Commands(handle);
+			final Commands commands = new Commands(handle, this);
 			String command;
 			while ((command = reader.readLine()) != null) {
 				try {
-					CharacterCommand charCommand = commands.createCharacterCommand(command);
-					game.execute(charCommand.character, charCommand.command);
+					Command charCommand = commands.parseCommand(command);
+					game.execute(character, charCommand);
 				} catch (UnknownCommandException e) {
 					writer.println("What does that mean?");
 				} catch (NotInGameException e) {
@@ -75,4 +72,14 @@ public class ClientHandler implements Callable<String> {
 			clientSocket.close();
 		}
 	}
+
+    @Override
+    public void setCharacter(String character) {
+        this.character = character;
+    }
+
+    @Override
+    public String character() {
+        return character;
+    }
 }
