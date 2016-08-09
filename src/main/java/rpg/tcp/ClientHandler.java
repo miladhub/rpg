@@ -77,9 +77,4 @@ public class ClientHandler implements Callable<String>, ClientState {
     public void setCharacter(String character) {
         this.character = character;
     }
-
-    @Override
-    public String character() {
-        return character;
-    }
 }

@@ -69,9 +69,4 @@ public class CommandsTest implements ClientState {
 	public void setCharacter(String character) {
 		this.character = character;
 	}
-
-	@Override
-	public String character() {
-		return character;
-	}
 }
